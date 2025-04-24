@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Pages - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .artists-container {
+            padding: calc(var(--navbar-height) + 2rem) 2rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #000, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .controls-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #eee;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            border-color: #000;
+            background: #f8f8f8;
+        }
+
+        .filter-btn.active {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+
+        .artists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .artist-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .artist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .artist-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: #f8f8f8;
+        }
+
+        .artist-info {
+            padding: 1.5rem;
+        }
+
+        .artist-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .artist-categories {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .category-tag.photography { background-color: #4ECDC4; }
+        .category-tag.graphic-design { background-color: #96CEB4; }
+        .category-tag.painter { background-color: #FF6B6B; }
+        .category-tag.web-designer { background-color: #45B7D1; }
+        .category-tag.cinematographer { background-color: #7C4DFF; }
+        .category-tag.magazine-editor { background-color: #FF4081; }
+        .category-tag.illustrator { background-color: #FFA726; }
+
+        .artist-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .artist-meta p {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .artist-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .view-btn, .edit-btn, .delete-btn {
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .view-btn {
+            background: #000;
+            color: white;
+        }
+
+        .edit-btn {
+            background: #333;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #d9534f;
+            color: white;
+        }
+
+        .view-btn:hover, .edit-btn:hover, .delete-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .no-artists {
+            text-align: center;
+            padding: 4rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .artists-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-container {
+                flex-direction: column;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .filter-container {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html">Artists</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-right">
+            <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="artists-container">
+        <div class="dashboard-header">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-artists">0</div>
+                    <div class="stat-label">Total Artists</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="active-artists">0</div>
+                    <div class="stat-label">Active Artists</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-works">0</div>
+                    <div class="stat-label">Total Works</div>
+                </div>
+            </div>
+
+            <div class="controls-container">
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search artists...">
+                </div>
+                <div class="filter-container">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="photography">Photography</button>
+                    <button class="filter-btn" data-filter="graphic-design">Graphic Design</button>
+                    <button class="filter-btn" data-filter="painter">Painter</button>
+                    <button class="filter-btn" data-filter="web-designer">Web Designer</button>
+                    <button class="filter-btn" data-filter="cinematographer">Cinematographer</button>
+                    <button class="filter-btn" data-filter="magazine-editor">Magazine Editor</button>
+                    <button class="filter-btn" data-filter="illustrator">Illustrator</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="artists-grid" class="artists-grid">
+            <!-- Artist cards will be populated here -->
+            <div class="no-artists">Loading artist pages...</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sonder. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/firebase-config.js" defer></script>
+    <script type="module" src="js/admin-artists.js" defer></script>
+    <script type="module" src="js/notifications.js" defer></script>
+    <script src="js/menu.js" defer></script>
+</body>
+</html> 

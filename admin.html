@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+            <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <a href="admin.html" class="active">Admin</a>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="admin-container">
+        <h1>Admin Dashboard</h1>
+        <div class="submissions-grid">
+            <!-- Sample submission card (will be populated dynamically) -->
+            <div class="submission-card">
+                <img src="https://via.placeholder.com/300x200" alt="Artwork Preview">
+                <div class="submission-info">
+                    <h3>Artwork Title</h3>
+                    <p>Description of the artwork goes here...</p>
+                    <div class="submission-actions">
+                        <button class="approve-btn">Approve</button>
+                        <button class="reject-btn">Reject</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sonder. All rights reserved.</p>
+    </footer>
+
+    <script src="js/admin.js"></script>
+</body>
+</html> 

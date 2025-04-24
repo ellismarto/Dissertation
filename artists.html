@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artists - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .artists-container {
+            padding: calc(var(--navbar-height) + 4rem) 2rem 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .artists-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .artists-title {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .artists-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .artists-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0rem;
+        }
+
+        .artist-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            padding: 0rem;
+            border-radius: 8px;
+        }
+
+        .artist-link:hover {
+            background: #f8f8f8;
+            transform: translateX(10px);
+        }
+
+        .artist-name {
+            font-size: 2.5rem;
+            font-weight: 500;
+            letter-spacing: -0.05em;
+            line-height: 1.2;
+            margin: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .artist-link:hover .artist-name {
+            color: #000;
+        }
+
+        .artist-categories {
+            display: flex;
+            gap: 0.8rem;
+            margin: 0;
+            flex-wrap: wrap;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #000;
+            font-weight: 500;
+            white-space: nowrap;
+            background: none;
+        }
+
+        .category-tag.photography,
+        .category-tag.graphic-design,
+        .category-tag.painter,
+        .category-tag.web-designer,
+        .category-tag.cinematographer,
+        .category-tag.magazine-editor,
+        .category-tag.illustrator {
+            background: none;
+        }
+
+        @media (max-width: 768px) {
+            .artists-container {
+                padding: calc(var(--navbar-height) + 2rem) 1rem 2rem 1rem;
+            }
+
+            .artists-title {
+                font-size: 2.5rem;
+            }
+
+            .artist-name {
+                font-size: 2rem;
+            }
+
+            .artist-link {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html" class="active">Artists</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-right">
+            <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="artists-container">
+        <div class="artists-header">
+            <h1 class="artists-title">Our Artists</h1>
+            <p class="artists-subtitle">Discover and explore the talented artists who showcase their work on Sonder.</p>
+        </div>
+
+        <div id="artists-list" class="artists-list">
+            <!-- Artist links will be populated here -->
+            <div class="no-artists">Loading artists...</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sonder. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/firebase-config.js" defer></script>
+    <script type="module" src="js/artists.js" defer></script>
+    <script type="module" src="js/notifications.js" defer></script>
+    <script src="js/menu.js" defer></script>
+</body>
+</html> 

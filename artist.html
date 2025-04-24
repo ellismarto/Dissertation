@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Profile - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .artist-container {
+            padding: calc(var(--navbar-height) + 2rem) 0rem 2rem 0rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .artist-header {
+            margin-bottom: 4rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .artist-name {
+            font-size: 4rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .empty-state h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .sections-container {
+            display: flex;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            flex-direction: column;
+            gap: 6rem;
+        }
+
+        .section {
+            position: relative;
+            padding-bottom: 1em;
+        }
+
+        .section-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: -0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .section-image {
+            width: 100%;
+            height: auto;
+            max-height: none;
+            object-fit: contain;
+            background: #eeeeee;
+        }
+
+        .section-description {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        /* Editor Controls */
+        .edit-controls {
+            display: none;
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .edit-btn, .save-btn, .add-section-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            background: #000;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover, .save-btn:hover, .add-section-btn:hover {
+            opacity: 0.8;
+        }
+
+        .editing .section {
+            padding: 1rem;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .editing .section-title[contenteditable="true"],
+        .editing .section-description[contenteditable="true"] {
+            padding: 0.5rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .editing .section-title[contenteditable="true"]:focus,
+        .editing .section-description[contenteditable="true"]:focus {
+            border-color: #000;
+        }
+
+        .image-upload {
+            display: none;
+            padding: 2rem;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            text-align: center;
+            margin: 1rem 0;
+            background: #f8f8f8;
+        }
+
+        .editing .image-upload {
+            display: block;
+        }
+
+        .image-upload input[type="file"] {
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .image-upload p {
+            color: #666;
+            margin: 0;
+        }
+
+        .image-upload-status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .section-controls {
+            display: none;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .editing .section-controls {
+            display: flex;
+        }
+
+        .delete-section-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            background: #d9534f;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-section-btn:hover {
+            background: #c9302c;
+        }
+
+        .pending-message {
+            position: fixed;
+            top: calc(var(--navbar-height) + 1rem);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -1rem); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        [contenteditable="true"] {
+            padding: 0.5rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        [contenteditable="true"]:focus {
+            border-color: #000;
+        }
+
+        .section-title[contenteditable="true"] {
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .section-description[contenteditable="true"] {
+            display: block;
+            width: 100%;
+            min-height: 100px;
+        }
+
+        .add-section-container {
+            display: none;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .editing .add-section-container {
+            display: block;
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: none !important;
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .editing .view-toggle {
+            display: flex !important;
+        }
+
+        .view-toggle button {
+            padding: 0.8rem 1.5rem;
+            background: #000;
+            color: white;
+            border: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .view-toggle button:hover {
+            opacity: 0.8;
+        }
+
+        .view-toggle button.active {
+            background: #333;
+        }
+
+        /* Collapsed View */
+        .sections-container.collapsed {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section.collapsed {
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section.collapsed .section-images,
+        .section.collapsed .section-description {
+            display: none;
+        }
+
+        .section.collapsed .section-title {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .artist-container {
+                padding: calc(var(--navbar-height) + 1rem) 0rem 1rem 0rem;
+            }
+
+            .artist-name {
+                font-size: 3rem;
+            }
+
+            .sections-container {
+                gap: 4rem;
+            }
+
+            .section-images {
+                grid-template-columns: 1fr;
+            }
+
+            .edit-controls {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html" class="active">Artists</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-search">
+            <input type="search" 
+                   id="nav-search-input" 
+                   placeholder="Search artists..." 
+                   autocomplete="off" 
+                   autocorrect="off" 
+                   autocapitalize="off" 
+                   spellcheck="false">
+            <div class="nav-search-results" id="nav-search-results"></div>
+        </div>
+        <div class="nav-right">
+            <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="artist-container">
+        <div class="artist-header">
+            <h1 class="artist-name" id="artist-name"></h1>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+            <h2>Start Creating Your Artist Page</h2>
+            <p>Add sections to showcase your work, tell your story, and share your creative journey.</p>
+        </div>
+
+        <div class="sections-container" id="sections-container"></div>
+
+        <div class="edit-controls">
+            <button id="edit-btn" class="edit-btn">Edit Page</button>
+            <button id="save-btn" class="save-btn" style="display: none;">Save Changes</button>
+            <button id="add-section-btn" class="add-section-btn" style="display: none;">Add Section</button>
+        </div>
+    </main>
+
+    <script type="module" src="js/firebase-config.js" defer></script>
+    <script type="module" src="js/artist.js" defer></script>
+    <script type="module" src="js/search.js" defer></script>
+    <script type="module" src="js/notifications.js" defer></script>
+    <script src="js/menu.js" defer></script>
+</body>
+</html> 

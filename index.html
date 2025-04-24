@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonder - Showcase Your Creativity</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .marquee-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: black;
+            color: white;
+            overflow: hidden;
+            padding: 0.5rem 0;
+            z-index: 1001;
+        }
+
+        /* Adjust main content to account for marquee */
+        main {
+            margin-top: 36px;
+        }
+    </style>
+</head>
+<body>
+
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyChsNcg5mFMSByHFadXhDUg6_qdz52vFaI",
+          authDomain: "sonder-7ddd6.firebaseapp.com",
+          projectId: "sonder-7ddd6",
+          storageBucket: "sonder-7ddd6.firebasestorage.app",
+          messagingSenderId: "291676715420",
+          appId: "1:291676715420:web:aa4b30a88d15a2f1c7f059",
+          measurementId: "G-SNYV2BRF56"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+      </script>
+
+
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+            <span>SUBMIT YOUR WORK TO US</span>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html">Artists</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-search">
+            <input type="search" 
+                   id="nav-search-input" 
+                   placeholder="Search artists..." 
+                   autocomplete="off" 
+                   autocorrect="off" 
+                   autocapitalize="off" 
+                   spellcheck="false">
+            <div class="nav-search-results" id="nav-search-results"></div>
+        </div>
+        <div class="nav-right">
+            <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Showcase Your Creativity Without the Cost</h1>
+                <p>A platform for emerging creatives to share their work with the world.</p>
+                <a href="auth.html" class="cta-button">Get Started</a>
+            </div>
+        </section>
+
+        <section class="featured-works">
+            <div class="section-header">
+                <h2>Featured Works</h2>
+                <p>Discover the latest creative submissions from our community</p>
+            </div>
+            
+            <div class="works-grid">
+                <article class="work-card">
+                    <div class="work-image" data-title="Marto Business Card" data-year="2025">
+                        <img src="images/Business Card Front Mockup.png" alt="Minimalist Business Card Design">
+                    </div>
+                    <div class="work-info">
+                        <h3>Minimalist Business Card</h3>
+                        <button class="show-details-btn">View Details</button>
+                        <p>Clean, modern business card design featuring bold typography and professional layout.</p>
+                    </div>
+                </article>
+
+                <article class="work-card">
+                    <div class="work-image" data-title="Urban Art Collection" data-year="2025">
+                        <img src="images/DOUBLE PAGE ARTWORK EXAMPLE.jpg" alt="Double Page Artwork">
+                    </div>
+                    <div class="work-info">
+                        <h3>Urban Art Collection</h3>
+                        <button class="show-details-btn">View Details</button>
+                        <p>A striking double-page spread showcasing urban culture and artistic expression.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sonder. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/firebase-config.js" defer></script>
+    <script type="module" src="js/search.js" defer></script>
+    <script type="module" src="js/notifications.js" defer></script>
+</body>
+</html>

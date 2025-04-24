@@ -1,0 +1,265 @@
+.submit-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 8rem 4rem 4rem;
+}
+
+.submit-box {
+    background-color: white;
+    padding: 4rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.submit-box h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    margin-bottom: 3rem;
+    color: var(--primary-color);
+}
+
+.preview-container {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+#preview {
+    max-width: 100%;
+    max-height: 400px;
+    margin-top: 1rem;
+    object-fit: contain;
+}
+
+.submit-button {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1.25rem;
+    font-size: 0.95rem;
+    margin-top: 2rem;
+    letter-spacing: -0.01em;
+}
+
+.submit-button:hover {
+    background-color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+    .submit-container {
+        padding: 6rem 1.5rem 2rem;
+    }
+
+    .submit-box {
+        padding: 2rem;
+    }
+
+    .submit-box h1 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+}
+
+.submission-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.submission-form {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus {
+    border-color: #000;
+    outline: none;
+}
+
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.category-button {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #000;
+    background: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    color: #000;
+    border-radius: 4px;
+}
+
+.category-button:hover {
+    background: #f5f5f5;
+}
+
+.category-button.selected {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.file-input-container {
+    position: relative;
+}
+
+.file-input-label {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #f5f5f5;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-input-label:hover {
+    background: #eee;
+    border-color: #ccc;
+}
+
+input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.preview-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.preview-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.upload-progress {
+    height: 4px;
+    background: #f0f0f0;
+    margin: 1rem 0;
+    border-radius: 2px;
+    overflow: hidden;
+    display: none;
+}
+
+.upload-progress.visible {
+    display: block;
+}
+
+.upload-progress::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 0;
+    background: #000;
+    animation: progress 1s infinite linear;
+}
+
+@keyframes progress {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+.status-message {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.status-message.error {
+    background: #fee;
+    color: #c00;
+}
+
+.status-message.success {
+    background: #efe;
+    color: #0c0;
+}
+
+button[type="submit"] {
+    padding: 1rem 2rem;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background: #333;
+}
+
+button[type="submit"]:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .submission-container {
+        padding: 1rem;
+    }
+
+    .category-buttons {
+        flex-direction: column;
+    }
+
+    .category-button {
+        width: 100%;
+        text-align: center;
+    }
+} 

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Your Work - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/submit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html">Artists</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-right">
+            <a href="submit.html" class="nav-submit-button active">Submit Work</a>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="submit-container">
+        <form id="submission-form" class="submission-form">
+            <div class="form-group">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Creative Category</label>
+                <div class="category-buttons" id="category-buttons">
+                    <button type="button" class="category-button" data-category="photography">Photography</button>
+                    <button type="button" class="category-button" data-category="graphic-design">Graphic Design</button>
+                    <button type="button" class="category-button" data-category="painter">Painter</button>
+                    <button type="button" class="category-button" data-category="web-designer">Web Designer</button>
+                    <button type="button" class="category-button" data-category="cinematographer">Cinematographer</button>
+                    <button type="button" class="category-button" data-category="magazine-editor">Magazine Editor</button>
+                    <button type="button" class="category-button" data-category="illustrator">Illustrator</button>
+                </div>
+                <input type="hidden" id="selected-category" name="category" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description of Your Work</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <div class="file-input-container">
+                    <label for="work" class="file-input-label">Select Images (Max 5)</label>
+                    <input type="file" id="work" name="work" accept="image/*" multiple required>
+                </div>
+                <div class="preview-container" id="preview-container"></div>
+            </div>
+
+            <div class="upload-progress" id="upload-progress"></div>
+            <div class="status-message" id="status-message"></div>
+
+            <button type="submit" class="submit-btn">Submit Work</button>
+        </form>
+    </main>
+
+    <script type="module" src="js/firebase-config.js" defer></script>
+    <script type="module" src="js/submit.js" defer></script>
+    <script type="module" src="js/notifications.js" defer></script>
+    <script src="js/menu.js" defer></script>
+</body>
+</html> 

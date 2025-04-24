@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Changes - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .changes-container {
+            padding: calc(var(--navbar-height) + 2rem) 2rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .changes-header {
+            margin-bottom: 2rem;
+        }
+
+        .changes-title {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .change-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .change-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .change-info {
+            flex: 1;
+        }
+
+        .change-artist {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .change-timestamp {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .change-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .approve-btn, .reject-btn, .preview-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .approve-btn {
+            background: #000;
+            color: white;
+        }
+
+        .reject-btn {
+            background: #ff4444;
+            color: white;
+        }
+
+        .preview-btn {
+            background: #f8f8f8;
+            color: #000;
+            border: 1px solid #ddd;
+        }
+
+        .preview-btn:hover {
+            background: #eee;
+        }
+
+        .approve-btn:hover, .reject-btn:hover {
+            opacity: 0.8;
+        }
+
+        .change-content {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .change-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .previous-version, .new-version {
+            padding: 1.5rem;
+            background: #f8f8f8;
+            border-radius: 4px;
+        }
+
+        .version-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .no-changes {
+            text-align: center;
+            padding: 4rem;
+            color: #666;
+        }
+
+        /* Preview Modal Styles */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .preview-modal.active {
+            display: block;
+        }
+
+        .preview-content {
+            background: white;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        .close-preview {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .close-preview:hover {
+            color: #000;
+        }
+
+        .preview-sections {
+            display: grid;
+            gap: 3rem;
+        }
+
+        .preview-section {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 2rem;
+        }
+
+        .preview-section:last-child {
+            border-bottom: none;
+        }
+
+        .preview-section-title {
+            font-size: 1.25rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .preview-section-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .section-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-content {
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html">Artists</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+            <a href="artist-changes.html" class="active">Changes</a>
+        </div>
+        <div class="nav-right">
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="changes-container">
+        <div class="changes-header">
+            <h1 class="changes-title">Artist Page Changes</h1>
+        </div>
+        <div id="changes-list">
+            <!-- Changes will be loaded here -->
+        </div>
+    </main>
+
+    <!-- Preview Modal -->
+    <div class="preview-modal" id="preview-modal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h2 class="preview-title"></h2>
+                <button class="close-preview">&times;</button>
+            </div>
+            <div class="preview-sections">
+                <!-- Preview content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/artist-changes.js"></script>
+    <script type="module" src="js/notifications.js"></script>
+</body>
+</html> 

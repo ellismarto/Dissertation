@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Dashboard - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            padding: calc(var(--navbar-height) + 4rem) 2rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - var(--navbar-height));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .dashboard-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .option-card {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #eee;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .option-title {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        .option-description {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .option-button:hover {
+            background: #333;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: calc(var(--navbar-height) + 2rem) 1rem 1rem 1rem;
+            }
+
+            .dashboard-title {
+                font-size: 2rem;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <!-- Load Firebase scripts in head with defer -->
+    <script type="module" src="js/firebase-config.js" defer></script>
+    <script type="module" src="js/notifications.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html">Artists</a>
+            <a href="submission-dashboard.html" class="active">Dashboard</a>
+        </div>
+        <div class="nav-right">
+            <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Submission Dashboard</h1>
+            <p class="dashboard-subtitle">Choose how you'd like to view and manage submissions</p>
+        </div>
+
+        <div class="options-grid">
+            <div class="option-card" onclick="window.location.href='admin-messages.html'">
+                <div class="option-icon">📝</div>
+                <h2 class="option-title">Current Submissions</h2>
+                <p class="option-description">View and manage all incoming submissions, including messages and artwork submissions.</p>
+                <a href="admin-messages.html" class="option-button">View Submissions</a>
+            </div>
+
+            <div class="option-card" onclick="window.location.href='admin-artists.html'">
+                <div class="option-icon">🎨</div>
+                <h2 class="option-title">Artist Pages</h2>
+                <p class="option-description">View and manage artist page submissions, including profile information and featured works.</p>
+                <a href="admin-artists.html" class="option-button">View Artists</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sonder. All rights reserved.</p>
+    </footer>
+
+    <script src="js/menu.js" defer></script>
+</body>
+</html> 

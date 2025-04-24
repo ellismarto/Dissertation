@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artwork Submissions - Sonder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .messages-container {
+            padding: calc(var(--navbar-height) + 2rem) 2rem 2rem 2rem;
+        }
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .controls-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .search-container {
+            flex: 1;
+            min-width: 250px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .filter-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .filter-btn {
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #000;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            color: #000;
+        }
+        .filter-btn.active {
+            background: #000;
+            color: white;
+        }
+        .sort-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .sort-select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .message-card {
+            background: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            position: relative;
+        }
+        .message-card:hover {
+            transform: translateY(-2px);
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .message-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .message-content {
+            white-space: pre-wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        .artwork-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .artwork-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: #f8f8f8;
+            transition: transform 0.2s ease;
+        }
+        .artwork-image:hover {
+            transform: scale(1.02);
+        }
+        .pending {
+            border-left: 4px solid #f0ad4e;
+        }
+        .approved {
+            border-left: 4px solid #5cb85c;
+        }
+        .rejected {
+            border-left: 4px solid #d9534f;
+        }
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .category-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            color: white;
+        }
+        .category-tag.photography { background-color: #4ECDC4; }
+        .category-tag.graphic-design { background-color: #96CEB4; }
+        .category-tag.painter { background-color: #FF6B6B; }
+        .category-tag.web-designer { background-color: #45B7D1; }
+        .category-tag.cinematographer { background-color: #7C4DFF; }
+        .category-tag.magazine-editor { background-color: #FF4081; }
+        .category-tag.illustrator { background-color: #FFA726; }
+
+        .category-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .category-filter button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: white;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .category-filter button.active {
+            opacity: 1;
+        }
+        .category-filter button[data-category="photography"] { background-color: #4ECDC4; }
+        .category-filter button[data-category="graphic-design"] { background-color: #96CEB4; }
+        .category-filter button[data-category="painter"] { background-color: #FF6B6B; }
+        .category-filter button[data-category="web-designer"] { background-color: #45B7D1; }
+        .category-filter button[data-category="cinematographer"] { background-color: #7C4DFF; }
+        .category-filter button[data-category="magazine-editor"] { background-color: #FF4081; }
+        .category-filter button[data-category="illustrator"] { background-color: #FFA726; }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .approve-btn, .reject-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s ease;
+        }
+        .approve-btn {
+            background-color: #5cb85c;
+            color: white;
+        }
+        .reject-btn {
+            background-color: #d9534f;
+            color: white;
+        }
+        .approve-btn:hover, .reject-btn:hover {
+            opacity: 0.8;
+        }
+        .artist-link {
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px solid #000;
+            transition: opacity 0.3s ease;
+        }
+        .artist-link:hover {
+            opacity: 0.7;
+        }
+    </style>
+    <!-- Load Firebase scripts in head with defer -->
+    <script type="module" src="js/firebase-config.js" defer></script>
+    <script type="module" src="js/admin-messages.js" defer></script>
+    <script type="module" src="js/notifications.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/menu.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Sonder</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="artists.html">Artists</a>
+            <a href="submission-dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-right">
+            <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
+        </div>
+        <button class="mobile-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="messages-container">
+        <div class="dashboard-header">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-messages">0</div>
+                    <div class="stat-label">Total Submissions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pending-count">0</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="today-count">0</div>
+                    <div class="stat-label">Today's Submissions</div>
+                </div>
+            </div>
+
+            <div class="category-filter">
+                <button class="active" data-category="all">All</button>
+                <button data-category="photography">Photography</button>
+                <button data-category="graphic-design">Graphic Design</button>
+                <button data-category="painter">Painter</button>
+                <button data-category="web-designer">Web Designer</button>
+                <button data-category="cinematographer">Cinematographer</button>
+                <button data-category="magazine-editor">Magazine Editor</button>
+                <button data-category="illustrator">Illustrator</button>
+            </div>
+
+            <div class="controls-container">
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search submissions...">
+                </div>
+                <div class="filter-container">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="pending">Pending</button>
+                    <button class="filter-btn" data-filter="approved">Approved</button>
+                    <button class="filter-btn" data-filter="rejected">Rejected</button>
+                </div>
+                <div class="sort-container">
+                    <select id="sort-select" class="sort-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="messages-list"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sonder. All rights reserved.</p>
+    </footer>
+</body>
+</html> 
+

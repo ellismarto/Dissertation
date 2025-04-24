@@ -1,0 +1,106 @@
+.admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 8rem 4rem 4rem;
+}
+
+.admin-container h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    margin-bottom: 4rem;
+    color: var(--primary-color);
+}
+
+.submissions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 4rem;
+}
+
+.submission-card {
+    background-color: white;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.submission-card:hover {
+    transform: translateY(-5px);
+}
+
+.submission-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.submission-info {
+    padding: 2rem 0;
+}
+
+.submission-info h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.submission-info p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    letter-spacing: -0.01em;
+}
+
+.submission-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.approve-btn {
+    background-color: var(--primary-color);
+    padding: 1rem 2rem;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+}
+
+.approve-btn:hover {
+    background-color: var(--text-color);
+}
+
+.reject-btn {
+    background-color: var(--primary-color);
+    padding: 1rem 2rem;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+}
+
+.reject-btn:hover {
+    background-color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 6rem 1.5rem 2rem;
+    }
+
+    .admin-container h1 {
+        font-size: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .submissions-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .submission-card img {
+        height: 250px;
+    }
+
+    .submission-info {
+        padding: 1.5rem 0;
+    }
+} 
