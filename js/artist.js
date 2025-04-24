@@ -958,7 +958,7 @@ artistCategoryStyle.textContent = `
         .artist-header-container {
             flex-direction: column;
             align-items: flex-start;
-            gap: 0rem;
+            gap: 1rem;
         }
         
         .artist-category {
@@ -1251,6 +1251,13 @@ function toggleEditMode(isEnabled) {
     saveBtn.style.display = isEnabled ? 'block' : 'none';
     addSectionBtn.style.display = isEnabled ? 'block' : 'none';
     isCollapsedView = false; // Reset view mode when exiting edit mode
+
+    // Show/hide feature image upload button
+    const uploadButton = document.querySelector('.feature-image-upload-btn');
+    if (uploadButton) {
+        uploadButton.style.display = isEnabled ? 'block' : 'none';
+    }
+
     displayContent(currentArtist);
 }
 
@@ -1259,27 +1266,22 @@ function setupFeatureImageUpload() {
     const featureImageContainer = document.querySelector('.feature-image-container');
     if (!featureImageContainer) return;
 
-    const isViewMode = document.body.classList.contains('view-mode');
-    if (isViewMode) {
-        // Remove the upload button in view mode
-        const uploadButton = featureImageContainer.querySelector('.upload-feature-image');
-        if (uploadButton) {
-            uploadButton.remove();
-        }
-        return;
+    // Create upload button
+    const uploadButton = document.createElement('button');
+    uploadButton.className = 'feature-image-upload-btn';
+    uploadButton.textContent = 'Upload Feature Image';
+    featureImageContainer.appendChild(uploadButton);
+
+    // Hide button if not in edit mode
+    if (!document.body.classList.contains('editing')) {
+        uploadButton.style.display = 'none';
     }
 
-    // Create upload button and file input
-    const uploadButton = document.createElement('button');
-    uploadButton.className = 'upload-feature-image';
-    uploadButton.textContent = 'Upload Feature Image';
-    
+    // Create file input
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.style.display = 'none';
-    
-    featureImageContainer.appendChild(uploadButton);
     featureImageContainer.appendChild(fileInput);
 
     // Handle file selection
