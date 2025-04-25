@@ -958,7 +958,7 @@ artistCategoryStyle.textContent = `
         .artist-header-container {
             flex-direction: column;
             align-items: flex-start;
-            gap: 1rem;
+            gap: 0rem;
         }
         
         .artist-category {
@@ -1135,7 +1135,7 @@ async function saveChanges() {
 
         // Check if there are any actual changes
         const hasChanges = checkForChanges(currentState.sections || [], sections) || 
-                          currentState.featureImage !== currentArtist.featureImage;
+                          (currentState.featureImage !== currentArtist?.featureImage);
         
         if (!hasChanges) {
             // No changes were made, just exit edit mode
@@ -1166,15 +1166,23 @@ async function saveChanges() {
         // Create a new pending change document
         const timestamp = new Date().toISOString();
         const changeRef = doc(db, 'pendingChanges', `${artistName}_${timestamp}`);
+        
+        // Create the proposed state object, only including featureImage if it exists
+        const proposedState = {
+            name: artistName,
+            sections: sections,
+            lastUpdated: timestamp
+        };
+        
+        // Only add featureImage if it exists
+        if (currentArtist && currentArtist.featureImage) {
+            proposedState.featureImage = currentArtist.featureImage;
+        }
+
         await setDoc(changeRef, {
             artistName: artistName,
             previousState: currentState,
-            proposedState: {
-                name: artistName,
-                sections: sections,
-                featureImage: currentArtist.featureImage,
-                lastUpdated: timestamp
-            },
+            proposedState: proposedState,
             timestamp: timestamp,
             status: 'pending',
             type: 'artist_page_update'
@@ -1208,6 +1216,24 @@ async function saveChanges() {
 
 // Function to check if there are actual changes between two states
 function checkForChanges(oldSections, newSections) {
+    // If both are empty or undefined, no changes
+    if ((!oldSections || oldSections.length === 0) && (!newSections || newSections.length === 0)) {
+        return false;
+    }
+
+    // If one is empty and the other isn't, check if it's just a default services section
+    if ((!oldSections || oldSections.length === 0) && newSections && newSections.length === 1) {
+        const section = newSections[0];
+        // If it's just a default empty services section, no changes
+        if (section.type === 'services' && 
+            section.title === 'Services' && 
+            (!section.description || section.description === '') && 
+            (!section.services || section.services.length === 0)) {
+            return false;
+        }
+    }
+
+    // If lengths are different (excluding the default services case above), there are changes
     if (oldSections.length !== newSections.length) {
         return true;
     }
@@ -1225,6 +1251,11 @@ function checkForChanges(oldSections, newSections) {
             const oldServices = oldSection.services || [];
             const newServices = newSection.services || [];
 
+            // If both services arrays are empty, no changes
+            if (oldServices.length === 0 && newServices.length === 0) {
+                return false;
+            }
+
             if (oldServices.length !== newServices.length) {
                 return true;
             }
@@ -1236,6 +1267,13 @@ function checkForChanges(oldSections, newSections) {
             });
         } else {
             // Compare portfolio sections
+            // If both title and description are empty/default and no images, no changes
+            if ((!newSection.title || newSection.title === '') &&
+                (!newSection.description || newSection.description === '') &&
+                (!newSection.images || newSection.images.length === 0)) {
+                return false;
+            }
+
             return newSection.title !== oldSection.title ||
                    newSection.description !== oldSection.description ||
                    JSON.stringify(newSection.images) !== JSON.stringify(oldSection.images);
@@ -1252,13 +1290,29 @@ function toggleEditMode(isEnabled) {
     addSectionBtn.style.display = isEnabled ? 'block' : 'none';
     isCollapsedView = false; // Reset view mode when exiting edit mode
 
-    // Show/hide feature image upload button
-    const uploadButton = document.querySelector('.feature-image-upload-btn');
-    if (uploadButton) {
-        uploadButton.style.display = isEnabled ? 'block' : 'none';
+    // Always remove any existing upload buttons first
+    const existingUploadButtons = document.querySelectorAll('.feature-image-upload-btn');
+    existingUploadButtons.forEach(button => button.remove());
+
+    // If entering edit mode, create a new upload button
+    if (isEnabled) {
+        setupFeatureImageUpload();
     }
 
-    displayContent(currentArtist);
+    // When exiting edit mode, check if we need to show empty state
+    if (!isEnabled && (!currentArtist.sections || currentArtist.sections.length === 0 || 
+        (currentArtist.sections.length === 1 && 
+         currentArtist.sections[0].type === 'services' && 
+         (!currentArtist.sections[0].services || currentArtist.sections[0].services.length === 0)))) {
+        emptyState.innerHTML = `
+            <h2>Start Creating Your Artist Page</h2>
+            <p>Add sections to showcase your work, tell your story, and share your creative journey.</p>
+        `;
+        emptyState.style.display = 'block';
+        sectionsContainer.style.display = 'none';
+    } else {
+        displayContent(currentArtist);
+    }
 }
 
 // Add feature image upload functionality
