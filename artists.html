@@ -8,21 +8,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .artists-container {
-            padding: calc(var(--navbar-height) + 4rem) 2rem 4rem 2rem;
-            max-width: 1200px;
+            padding: calc(var(--navbar-height) + 9rem) 1rem 4rem 1rem;
+            max-width: 2200px;
             margin: 0 auto;
         }
 
         .artists-header {
-            text-align: center;
-            margin-bottom: 4rem;
+            text-align: start;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid rgb(0 0 0 / 31%);
         }
 
         .artists-title {
-            font-size: 3.5rem;
-            font-weight: 300;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
+            font-size: 6rem;
+            font-weight: 500;
+            letter-spacing: -0.06em;
             line-height: 1.1;
         }
 
@@ -34,9 +34,41 @@
             line-height: 1.6;
         }
 
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 3rem;
+            padding: 0 15rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: none;
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: #f8f8f8;
+            color: #000;
+        }
+
+        .filter-btn.active {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+
         .artists-list {
             display: flex;
             flex-direction: column;
+            padding-left: 15rem;
+            padding-right: 15rem;
             gap: 0rem;
         }
 
@@ -113,7 +145,7 @@
             }
 
             .artist-link {
-                flex-direction: column;
+                flex-direction: row;
                 align-items: flex-start;
                 gap: 0.8rem;
             }
@@ -148,7 +180,17 @@
     <main class="artists-container">
         <div class="artists-header">
             <h1 class="artists-title">Our Artists</h1>
-            <p class="artists-subtitle">Discover and explore the talented artists who showcase their work on Sonder.</p>
+        </div>
+
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="photography">Photography</button>
+            <button class="filter-btn" data-filter="graphic-design">Graphic Design</button>
+            <button class="filter-btn" data-filter="painter">Painter</button>
+            <button class="filter-btn" data-filter="web-designer">Web Designer</button>
+            <button class="filter-btn" data-filter="cinematographer">Cinematographer</button>
+            <button class="filter-btn" data-filter="magazine-editor">Magazine Editor</button>
+            <button class="filter-btn" data-filter="illustrator">Illustrator</button>
         </div>
 
         <div id="artists-list" class="artists-list">

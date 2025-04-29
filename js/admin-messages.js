@@ -294,6 +294,10 @@ async function renderSubmissions() {
                     <button class="approve-btn" onclick="updateSubmissionStatus('${data.id}', 'approved')">Approve</button>
                     <button class="reject-btn" onclick="updateSubmissionStatus('${data.id}', 'rejected')">Reject</button>
                 </div>
+            ` : data.status === 'rejected' ? `
+                <div class="action-buttons">
+                    <button class="delete-btn" onclick="deleteSubmission('${data.id}')">Delete Submission</button>
+                </div>
             ` : ''}
         `;
         
@@ -321,8 +325,26 @@ async function loadSubmissions() {
     }
 }
 
-// Make updateSubmissionStatus available globally
+// Add delete submission function
+async function deleteSubmission(submissionId) {
+    if (confirm('Are you sure you want to delete this submission? This action cannot be undone.')) {
+        try {
+            await deleteDoc(doc(db, 'submissions', submissionId));
+            
+            // Remove deleted message from allSubmissions
+            allSubmissions = allSubmissions.filter(msg => msg.id !== submissionId);
+            updateStats();
+            renderSubmissions();
+        } catch (error) {
+            console.error('Error deleting submission:', error);
+            alert('Error deleting submission. Please try again.');
+        }
+    }
+}
+
+// Make functions available globally
 window.updateSubmissionStatus = updateSubmissionStatus;
+window.deleteSubmission = deleteSubmission;
 
 // Initialize
 loadSubmissions(); 

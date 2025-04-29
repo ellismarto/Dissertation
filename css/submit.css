@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    padding: 8rem 4rem 4rem;
+    padding: 0rem 4rem 4rem;
 }
 
 .submit-box {
@@ -261,5 +261,47 @@ button[type="submit"]:disabled {
     .category-button {
         width: 100%;
         text-align: center;
+    }
+}
+
+.page-header {
+    background-color: var(--background-color);
+    padding: calc(var(--navbar-height) + 9rem) 1rem 4rem;
+    text-align: start;
+}
+
+.header-content {
+    max-width: 2200px;
+    margin: 0 auto;
+}
+
+.page-header h1 {
+    font-size: 6rem;
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    line-height: 1.1;
+    color: var(--text-color);
+    border-bottom: 1px solid rgb(0 0 0 / 31%);
+}
+
+.page-header .subtitle {
+    font-size: 1.2rem;
+    color: var(--secondary-text-color);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        padding: 5rem 1.5rem 3rem;
+    }
+
+    .page-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .page-header .subtitle {
+        font-size: 1.1rem;
     }
 } 

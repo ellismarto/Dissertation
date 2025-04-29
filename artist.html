@@ -20,10 +20,38 @@
         }
 
         .artist-name {
-            font-size: 4rem;
-            font-weight: 300;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
+            font-size: 7rem;
+            font-weight: 500;
+            margin-bottom: 0;
+            padding-left: 0.6rem;
+            letter-spacing: -0.05em;
+            line-height: 0.6;
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            position: relative;
+            background: #eeeeee !important;
+        }
+
+        .artist-header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            gap: 0;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-top: 2rem;
+            background: #eeeeee !important;
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .artist-category {
+            font-size: 2.2rem;
+            color: #666;
+            padding-left: 0.9rem;
+            display: inline-block;
+            font-weight: 400;
+            letter-spacing: -0.05em;
+            background: #eeeeee !important;
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         .empty-state {
@@ -104,13 +132,19 @@
 
         .edit-btn, .save-btn, .add-section-btn {
             padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            background: #000;
+            border: 1px solid #ddd;
+            border-radius: 10rem;
+            background: #00000041;
+            backdrop-filter: blur(10px);
             color: white;
-            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .save-btn {
+            background-color: white !important;
+            color: #000 !important;
         }
 
         .edit-btn:hover, .save-btn:hover, .add-section-btn:hover {
@@ -250,16 +284,16 @@
 
         /* View Toggle */
         .view-toggle {
-            display: none !important;
             position: fixed;
             bottom: 2rem;
             left: 2rem;
             gap: 0.5rem;
             z-index: 1000;
+            display: none;
         }
 
         .editing .view-toggle {
-            display: flex !important;
+            display: flex;
         }
 
         .view-toggle button {
@@ -288,8 +322,9 @@
         }
 
         .section.collapsed {
-            padding: 1rem 0;
+            padding: 1rem;
             border-bottom: 1px solid #eee;
+            background: #fff;
         }
 
         .section.collapsed .section-images,
@@ -300,6 +335,141 @@
         .section.collapsed .section-title {
             margin: 0;
             cursor: pointer;
+        }
+
+        .submissions-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 10rem;
+            background: #00000041;
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submissions-btn:hover {
+            background: #444;
+        }
+
+        .submissions-popover {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .submissions-popover.active {
+            right: 0;
+        }
+
+        .submissions-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .submissions-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .close-popover {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.5rem;
+            line-height: 1;
+        }
+
+        .close-popover:hover {
+            color: #000;
+        }
+
+        .submissions-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .submission-item {
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .submission-item:hover {
+            border-color: #ddd;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .submission-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .submission-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .submission-status {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .submission-status.approved {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .submission-status.rejected {
+            background: #fce8e6;
+            color: #c5221f;
+        }
+
+        .submission-status.pending {
+            background: #fef7e0;
+            color: #b06000;
+        }
+
+        .submission-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-submission-btn {
+            padding: 0.5rem 1rem;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-submission-btn:hover {
+            background: #333;
         }
 
         @media (max-width: 768px) {
@@ -322,6 +492,11 @@
             .edit-controls {
                 bottom: 1rem;
                 right: 1rem;
+            }
+
+            .submissions-popover {
+                width: 100%;
+                right: -100%;
             }
         }
     </style>
@@ -373,10 +548,26 @@
 
         <div class="sections-container" id="sections-container"></div>
 
+        <div class="view-toggle">
+            <button id="grid-view" class="active">Grid View</button>
+            <button id="list-view">List View</button>
+        </div>
+
         <div class="edit-controls">
             <button id="edit-btn" class="edit-btn">Edit Page</button>
             <button id="save-btn" class="save-btn" style="display: none;">Save Changes</button>
             <button id="add-section-btn" class="add-section-btn" style="display: none;">Add Section</button>
+            <button id="submissions-btn" class="submissions-btn">Previous Submissions</button>
+        </div>
+
+        <div class="submissions-popover">
+            <div class="submissions-header">
+                <h3>Previous Submissions</h3>
+                <button class="close-popover">×</button>
+            </div>
+            <div class="submissions-list">
+                <!-- Submissions will be populated here -->
+            </div>
         </div>
     </main>
 

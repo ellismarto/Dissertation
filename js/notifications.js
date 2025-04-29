@@ -87,6 +87,21 @@ function displayNotifications(notifications) {
         return;
     }
 
+    // Defensive sort: newest first, regardless of query order or timestamp format
+    notifications.sort((a, b) => {
+        let aTime = a.timestamp;
+        let bTime = b.timestamp;
+        if (aTime?.seconds) aTime = aTime.seconds * 1000;
+        else if (aTime instanceof Date) aTime = aTime.getTime();
+        else if (typeof aTime === 'string') aTime = new Date(aTime).getTime();
+        else aTime = 0;
+        if (bTime?.seconds) bTime = bTime.seconds * 1000;
+        else if (bTime instanceof Date) bTime = bTime.getTime();
+        else if (typeof bTime === 'string') bTime = new Date(bTime).getTime();
+        else bTime = 0;
+        return bTime - aTime;
+    });
+
     const notificationsHTML = `
         <div class="notification-header">
             <span>Notifications</span>

@@ -107,41 +107,29 @@
 
     <main>
         <section class="hero">
+            <img class="hero-background" src="images/a321156a141477928d9e2fc1c70c9b07.jpg" alt="Background animation">
             <div class="hero-content">
-                <h1>Showcase Your Creativity Without the Cost</h1>
-                <p>A platform for emerging creatives to share their work with the world.</p>
-                <a href="auth.html" class="cta-button">Get Started</a>
+                <div class="hero-text-container">
+                    <div class="hero-text-top">
+                        <h1>AN ARTIST SHOWCASE AND</h1>
+                        <h1>A CREATIVE MARKETPLACE</h1>
+                    </div>
+                    <div class="hero-text-bottom">
+                        <h1>SINCE.</h1>
+                        <h1>2024</h1>
+                    </div>
+                </div>
             </div>
         </section>
 
         <section class="featured-works">
             <div class="section-header">
-                <h2>Featured Works</h2>
-                <p>Discover the latest creative submissions from our community</p>
+                <h2>Featured Artists</h2>
+                <p>Discover the talented artists who showcase their work on Sonder</p>
             </div>
             
-            <div class="works-grid">
-                <article class="work-card">
-                    <div class="work-image" data-title="Marto Business Card" data-year="2025">
-                        <img src="images/Business Card Front Mockup.png" alt="Minimalist Business Card Design">
-                    </div>
-                    <div class="work-info">
-                        <h3>Minimalist Business Card</h3>
-                        <button class="show-details-btn">View Details</button>
-                        <p>Clean, modern business card design featuring bold typography and professional layout.</p>
-                    </div>
-                </article>
-
-                <article class="work-card">
-                    <div class="work-image" data-title="Urban Art Collection" data-year="2025">
-                        <img src="images/DOUBLE PAGE ARTWORK EXAMPLE.jpg" alt="Double Page Artwork">
-                    </div>
-                    <div class="work-info">
-                        <h3>Urban Art Collection</h3>
-                        <button class="show-details-btn">View Details</button>
-                        <p>A striking double-page spread showcasing urban culture and artistic expression.</p>
-                    </div>
-                </article>
+            <div class="works-grid" id="featured-artists-grid">
+                <!-- Featured artists will be loaded here -->
             </div>
         </section>
     </main>
@@ -153,5 +141,6 @@
     <script type="module" src="js/firebase-config.js" defer></script>
     <script type="module" src="js/search.js" defer></script>
     <script type="module" src="js/notifications.js" defer></script>
+    <script type="module" src="js/featured-artists.js" defer></script>
 </body>
 </html>
