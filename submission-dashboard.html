@@ -6,6 +6,7 @@
     <title>Submission Dashboard - Sonder</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Override navbar styles for this page */
         .navbar {
@@ -733,7 +734,7 @@
         }
 
         .stats-card.artist-pages-card {
-            width: 55%;
+            width: 100%;
             padding: 2rem;
             margin-top: 0rem;
         }
@@ -842,7 +843,7 @@
         }
 
         .stats-card.artist-changes-card {
-            width: 43.2%;
+            width: 100%;
             padding: 2rem;
             margin-top: 0rem;
         }
@@ -1032,8 +1033,11 @@
             }
 
             .stats-card.visitors-card,
-            .stats-card.notifications-card {
+            .stats-card.notifications-card,
+            .stats-card.artist-pages-card,
+            .stats-card.artist-changes-card {
                 grid-column: 1;
+                width: 100%;
             }
         }
 
@@ -1886,155 +1890,163 @@
             </div>
         </div>
 
-        <div class="stats-cards-container">
-            <div class="stats-card visitors-card">
-                <div class="stats-card-header">
-                    <div class="view-icon">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                    <div class="time-selector-wrapper">
-                        <select class="time-selector">
-                            <option>Today</option>
-                            <option>This Week</option>
-                            <option>This Month</option>
-                            <option>All Time</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="stats-label">Total Website Visits</div>
-                <div class="stats-value" id="visit-count">-</div>
-            </div>
-
-            <div class="stats-card notifications-card">
-                <div class="stats-card-header">
-                    <div class="view-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="time-selector-wrapper">
-                        <select class="time-selector">
-                            <option>All Time</option>
-                            <option>Today</option>
-                            <option>This Week</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="stats-label">
-                    <span class="notification-count">-</span> unread notifications<span class="notification-dot"></span>
-                </div>
-                <div class="stats-value">Loading...</div>
-                <div class="notification-message" style="color: #666; font-size: 0.9rem;">Loading notification...</div>
-            </div>
-
-            <div class="stats-card submissions-card">
-                <div class="submissions-header">
-                    <div>
-                        <div class="submissions-title">
-                            <h2 class="stats-value">Submission Review</h2>
-                            <span class="submissions-count">0</span>
+        <div class="container-fluid px-0">
+            <div class="row g-3">
+                <div class="col-12 col-lg-4">
+                    <div class="stats-card visitors-card">
+                        <div class="stats-card-header">
+                            <div class="view-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="time-selector-wrapper">
+                                <select class="time-selector">
+                                    <option>Today</option>
+                                    <option>This Week</option>
+                                    <option>This Month</option>
+                                    <option>All Time</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="submissions-subtitle">Review and manage pending creative submissions awaiting approval.</div>
+                        <div class="stats-label">Total Website Visits</div>
+                        <div class="stats-value" id="visit-count">-</div>
                     </div>
-                    <div class="submissions-actions">
-                        <div class="submissions-search">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search in Submission Review...">
+                </div>
+                <div class="col-12 col-lg-8">
+                    <div class="stats-card notifications-card">
+                        <div class="stats-card-header">
+                            <div class="view-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="time-selector-wrapper">
+                                <select class="time-selector">
+                                    <option>All Time</option>
+                                    <option>Today</option>
+                                    <option>This Week</option>
+                                </select>
+                            </div>
                         </div>
-                        <button class="action-button reject">Reject</button>
-                        <button class="action-button approve">Approve</button>
-                    </div>
-                </div>
-
-                <div class="submissions-filters">
-                    <div class="filter-tag active">
-                        0 selected
-                    </div>
-                    <div class="filter-tag">
-                        This Week
-                        <span class="close">×</span>
-                    </div>
-                </div>
-
-                <table class="submissions-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Priority</th>
-                            <th>Category</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="submissions-list">
-                        <!-- Submissions will be populated here -->
-                    </tbody>
-                </table>
-                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-                    <a href="admin-messages.html" class="show-submissions-btn" style="margin: 0;">View All Submissions</a>
-                </div>
-            </div>
-
-            <div class="stats-card artist-pages-card">
-                <div class="stats-card-header">
-                    <div>
-                        <div class="stats-title">
-                            <h2 class="stats-value">Artist Pages</h2>
-                            <span class="artist-count" id="active-artist-count">0</span>
+                        <div class="stats-label">
+                            <span class="notification-count">-</span> unread notifications<span class="notification-dot"></span>
                         </div>
-                        <div class="stats-subtitle">Manage and review artist profiles and their published works.</div>
+                        <div class="stats-value">Loading...</div>
+                        <div class="notification-message" style="color: #666; font-size: 0.9rem;">Loading notification...</div>
                     </div>
-                    <div class="artist-actions">
-                        <div class="artist-search">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search artists...">
+                </div>
+                <div class="col-12">
+                    <div class="stats-card submissions-card">
+                        <div class="submissions-header">
+                            <div>
+                                <div class="submissions-title">
+                                    <h2 class="stats-value">Submission Review</h2>
+                                    <span class="submissions-count">0</span>
+                                </div>
+                                <div class="submissions-subtitle">Review and manage pending creative submissions awaiting approval.</div>
+                            </div>
+                            <div class="submissions-actions">
+                                <div class="submissions-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Search in Submission Review...">
+                                </div>
+                                <button class="action-button reject">Reject</button>
+                                <button class="action-button approve">Approve</button>
+                            </div>
+                        </div>
+
+                        <div class="submissions-filters">
+                            <div class="filter-tag active">
+                                0 selected
+                            </div>
+                            <div class="filter-tag">
+                                This Week
+                                <span class="close">×</span>
+                            </div>
+                        </div>
+
+                        <table class="submissions-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Priority</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissions-list">
+                                <!-- Submissions will be populated here -->
+                            </tbody>
+                        </table>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                            <a href="admin-messages.html" class="show-submissions-btn" style="margin: 0;">View All Submissions</a>
                         </div>
                     </div>
                 </div>
-
-                <table class="artist-table">
-                    <thead>
-                        <tr>
-                            <th>Artist</th>
-                            <th>Category</th>
-                            <th>Artist Added</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="artist-list">
-                        <!-- Artists will be populated here -->
-                    </tbody>
-                </table>
-                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-                    <a href="admin-artists.html" class="show-submissions-btn" style="margin: 0;">View All Artists</a>
-                </div>
-            </div>
-
-            <div class="stats-card artist-changes-card">
-                <div class="stats-card-header">
-                    <div>
-                        <div class="stats-title">
-                            <h2 class="stats-value">Artist Changes</h2>
-                            <span class="changes-count" id="pending-changes-count">0</span>
+                <div class="col-12 col-xl-7">
+                    <div class="stats-card artist-pages-card">
+                        <div class="stats-card-header">
+                            <div>
+                                <div class="stats-title">
+                                    <h2 class="stats-value">Artist Pages</h2>
+                                    <span class="artist-count" id="active-artist-count">0</span>
+                                </div>
+                                <div class="stats-subtitle">Manage and review artist profiles and their published works.</div>
+                            </div>
+                            <div class="artist-actions">
+                                <div class="artist-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Search artists...">
+                                </div>
+                            </div>
                         </div>
-                        <div class="stats-subtitle">Review pending changes to artist pages.</div>
+
+                        <table class="artist-table">
+                            <thead>
+                                <tr>
+                                    <th>Artist</th>
+                                    <th>Category</th>
+                                    <th>Artist Added</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="artist-list">
+                                <!-- Artists will be populated here -->
+                            </tbody>
+                        </table>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                            <a href="admin-artists.html" class="show-submissions-btn" style="margin: 0;">View All Artists</a>
+                        </div>
                     </div>
                 </div>
+                <div class="col-12 col-xl-5">
+                    <div class="stats-card artist-changes-card">
+                        <div class="stats-card-header">
+                            <div>
+                                <div class="stats-title">
+                                    <h2 class="stats-value">Artist Changes</h2>
+                                    <span class="changes-count" id="pending-changes-count">0</span>
+                                </div>
+                                <div class="stats-subtitle">Review pending changes to artist pages.</div>
+                            </div>
+                        </div>
 
-                <table class="changes-table">
-                    <thead>
-                        <tr>
-                            <th>Artist</th>
-                            <th>Submitted</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="changes-list">
-                        <!-- Changes will be populated here -->
-                    </tbody>
-                </table>
-                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-                    <a href="artist-changes.html" class="show-submissions-btn" style="margin: 0;">View All Changes</a>
+                        <table class="changes-table">
+                            <thead>
+                                <tr>
+                                    <th>Artist</th>
+                                    <th>Submitted</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="changes-list">
+                                <!-- Changes will be populated here -->
+                            </tbody>
+                        </table>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                            <a href="artist-changes.html" class="show-submissions-btn" style="margin: 0;">View All Changes</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
