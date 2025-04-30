@@ -1012,6 +1012,25 @@
             transition: background-color 0.2s ease;
             cursor: pointer;
         }
+
+        .submissions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .submissions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .submissions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
     <!-- Load Firebase scripts in head with defer -->
     <script type="module" src="js/firebase-config.js" defer></script>

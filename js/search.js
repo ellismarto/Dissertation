@@ -61,12 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
             searchResults.innerHTML = results.map(artist => {
                 // Create URL-safe version of name for the artist page
                 const nameParam = encodeURIComponent(artist.name);
+                // Format the category name
+                const formattedCategory = artist.category
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
                 return `
                     <a href="artist.html?name=${nameParam}" class="search-result-item">
                         <img src="${artist.imageUrl}" alt="${artist.name}" onerror="this.src='images/default-profile.jpg'">
                         <div class="artist-info">
                             <div class="search-result-name">${artist.name || 'Unnamed Artist'}</div>
-                            <div class="artist-category">${artist.category}</div>
+                            <div class="artist-category">${formattedCategory}</div>
                         </div>
                     </a>
                 `;
