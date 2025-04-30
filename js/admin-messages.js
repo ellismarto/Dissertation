@@ -10,12 +10,42 @@ let searchTerm = '';
 let currentCategory = 'all';
 let selectedMessages = new Set();
 
+// Helper function to format dates
+function formatDate(date) {
+    if (!date) return 'Unknown date';
+    
+    const now = new Date();
+    const diff = now - date;
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 7) {
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } else if (days > 0) {
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (hours > 0) {
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (minutes > 0) {
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else {
+        return 'Just now';
+    }
+}
+
 // DOM Elements
 const submissionsList = document.getElementById('messages-list');
 const searchInput = document.getElementById('search-input');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sortSelect = document.getElementById('sort-select');
-const categoryButtons = document.querySelectorAll('.category-filter button');
+const categorySelect = document.getElementById('category-select');
 const totalSubmissionsElement = document.getElementById('total-messages');
 const pendingCountElement = document.getElementById('pending-count');
 const todayCountElement = document.getElementById('today-count');
@@ -39,13 +69,9 @@ filterButtons.forEach(button => {
     });
 });
 
-categoryButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        categoryButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        currentCategory = button.dataset.category;
-        renderSubmissions();
-    });
+categorySelect.addEventListener('change', (e) => {
+    currentCategory = e.target.value;
+    renderSubmissions();
 });
 
 sortSelect.addEventListener('change', (e) => {
@@ -244,6 +270,41 @@ async function renderSubmissions() {
         const submissionCard = document.createElement('div');
         submissionCard.className = `message-card ${data.status || 'pending'}`;
         
+        // Get status display text
+        const statusText = {
+            'pending': 'Pending',
+            'approved': 'Approved',
+            'rejected': 'Rejected'
+        }[data.status || 'pending'];
+
+        // Format category display text
+        const categoryText = data.category ? data.category
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ') 
+            : 'Other';
+
+        // Create header with status tag
+        const headerHTML = `
+            <div class="message-header">
+                <div class="message-info">
+                    <div class="artist-details">
+                        <div class="artist-name">
+                            ${data.status === 'approved' 
+                                ? `<a href="artist.html?name=${encodeURIComponent(data.name || 'Unnamed Artist')}" class="artist-link">${data.name || 'Unnamed Artist'} <span class="link-arrow">↗</span></a>`
+                                : data.name || 'Unnamed Artist'
+                            }
+                        </div>
+                        <div class="artist-category">${categoryText}</div>
+                    </div>
+                </div>
+                <div class="message-meta">
+                    <span class="submission-status status-${data.status || 'pending'}">${statusText}</span>
+                    <div class="message-date">${formatDate(date)}</div>
+                </div>
+            </div>
+        `;
+        
         // Create image preview HTML
         let imagesHTML = '<div class="artwork-preview">';
         
@@ -271,20 +332,7 @@ async function renderSubmissions() {
         imagesHTML += '</div>';
         
         submissionCard.innerHTML = `
-            <div class="message-header">
-                <div>
-                    <div class="message-meta">
-                        From: ${data.status === 'approved' ? 
-                            `<a href="artist.html?name=${encodeURIComponent(data.name || 'Anonymous')}" class="artist-link">${data.name || 'Anonymous'}</a>` :
-                            data.name || 'Anonymous'
-                        } ${data.email ? `(${data.email})` : ''}
-                        <span class="category-tag ${category}">${category.split('-').map(word => 
-                            word.charAt(0).toUpperCase() + word.slice(1)
-                        ).join(' ')}</span>
-                        <span>Submitted: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}</span>
-                    </div>
-                </div>
-            </div>
+            ${headerHTML}
             <div class="message-content">
                 ${data.description || 'No description provided'}
             </div>

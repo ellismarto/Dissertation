@@ -7,7 +7,7 @@ const searchInput = document.getElementById('search-input');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const totalArtistsElement = document.getElementById('total-artists');
 const activeArtistsElement = document.getElementById('active-artists');
-const totalWorksElement = document.getElementById('total-works');
+const newArtistsElement = document.getElementById('new-artists');
 
 // State
 let currentFilter = 'all';
@@ -60,13 +60,16 @@ async function loadArtists() {
         });
 
         artists = [];
-        let totalWorks = 0;
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+        let newArtistsCount = 0;
 
         submissionsSnapshot.forEach((doc) => {
             const data = doc.data();
             // Only add unique artists
             if (!artists.some(a => a.name === data.name)) {
                 const artistPage = artistPages[data.name] || {};
+                
                 artists.push({
                     id: doc.id,
                     name: data.name,
@@ -101,16 +104,17 @@ async function loadArtists() {
                     }
                 }
             }
-            totalWorks++;
         });
 
         // Sort artists by name after collecting them
         artists.sort((a, b) => a.name.localeCompare(b.name));
 
-        // Update stats
-        totalArtistsElement.textContent = artists.length;
-        activeArtistsElement.textContent = artists.length; // All approved artists are active
-        totalWorksElement.textContent = totalWorks;
+        // Update stats with number and dots
+        const dotsHTML = Array(artists.length).fill('<div class="stat-dot"></div>').join('');
+        totalArtistsElement.innerHTML = `
+            ${artists.length}
+            <div class="stat-dots">${dotsHTML}</div>
+        `;
 
         filterAndDisplayArtists();
     } catch (error) {
@@ -149,23 +153,26 @@ function displayArtists(artistsToDisplay) {
     }
 
     const artistsHTML = artistsToDisplay.map(artist => `
-        <div class="artist-card">
+        <div class="artist-card" onclick="window.location.href='artist.html?name=${encodeURIComponent(artist.name)}'">
             <img src="${artist.previewImage || 'images/placeholder.jpg'}" alt="${artist.name}" class="artist-preview">
             <div class="artist-info">
                 <h3 class="artist-name">${artist.name}</h3>
                 <div class="artist-categories">
-                    ${artist.categories.map(category => `
-                        <span class="category-tag ${category}">${category}</span>
-                    `).join('')}
+                    ${artist.categories.map(category => {
+                        const formattedCategory = category
+                            .split('-')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ');
+                        return `<span class="category-tag ${category}">${formattedCategory}</span>`;
+                    }).join('')}
                 </div>
                 <div class="artist-meta">
                     <p>${artist.sections?.length || 0} works</p>
                     <p>Status: ${artist.status || 'pending'}</p>
                 </div>
                 <div class="artist-actions">
-                    <button class="view-btn" onclick="window.location.href='artist.html?name=${encodeURIComponent(artist.name)}'">View Page</button>
-                    <button class="edit-btn" onclick="editArtist('${artist.id}')">Edit</button>
-                    <button class="delete-btn" onclick="deleteArtist('${artist.id}')">Delete</button>
+                    <button class="view-btn">View Page</button>
+                    <button class="delete-btn" onclick="event.stopPropagation(); deleteArtist('${artist.id}')">Delete</button>
                 </div>
             </div>
         </div>

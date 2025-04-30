@@ -53,8 +53,8 @@
         }
 
         .dashboard-container {
-            padding: calc(var(--navbar-height) + 4rem) 2rem 2rem 2rem;
-            max-width: 1400px;
+            padding: calc(var(--navbar-height) + 4rem) 1rem 2rem 1rem;
+            max-width: 2200px;
             margin: 0 auto;
             min-height: calc(100vh - var(--navbar-height));
             display: flex;
@@ -65,10 +65,17 @@
         .header-section {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 2rem;
             margin-bottom: 4rem;
             width: 100%;
             padding-top: 2rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }
 
         .unread-section {
@@ -131,9 +138,6 @@
         }
 
         .welcome-section {
-            position: absolute;
-            top: calc(var(--navbar-height) + 4rem);
-            right: 2rem;
             text-align: right;
         }
 
@@ -418,16 +422,16 @@
             background: white;
             border-radius: 32px;
             padding: 1.5rem;
-            margin-top: 2rem;
+            margin-top: 0rem;
         }
 
         .stats-card.visitors-card {
-            width: 300px;
+            width: 38.2%;
         }
 
         .stats-card.notifications-card,
         .stats-card.submissions-card {
-            width: 500px;
+            width: 60%;
         }
 
         .submission-status {
@@ -724,11 +728,11 @@
         .stats-card.artist-pages-card {
             width: 55%;
             padding: 2rem;
-            margin-top: 2rem;
+            margin-top: 0rem;
         }
 
         .artist-count {
-            background: #4CAF50;
+            background: #ff3b30;
             color: white;
             width: 24px;
             height: 24px;
@@ -831,9 +835,9 @@
         }
 
         .stats-card.artist-changes-card {
-            width: 42%;
+            width: 43.2%;
             padding: 2rem;
-            margin-top: 2rem;
+            margin-top: 0rem;
         }
 
         .stats-card.artist-changes-card .stats-value {
@@ -851,6 +855,7 @@
 
         .stats-card.artist-changes-card .artist-name {
             font-size: 0.9rem;
+            margin-bottom: 0;
         }
 
         .stats-card.artist-changes-card td,
@@ -981,13 +986,38 @@
             background: #3f3f3f;
             color: white;
         }
+
+        .dashboard-container + footer {
+            background: transparent;
+        }
+
+        .dashboard-container + footer p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .dashboard-container .stats-card.artist-pages-card tbody tr:hover {
+            background: #3f3f3f;
+            transition: background-color 0.2s ease;
+        }
+
+        /* Add hover effect for submission rows */
+        .dashboard-container .stats-card.submissions-card tbody tr:hover {
+            background: #3f3f3f;
+            transition: background-color 0.2s ease;
+        }
+
+        .dashboard-container .stats-card.artist-changes-card tbody tr:hover {
+            background: #3f3f3f;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
     </style>
     <!-- Load Firebase scripts in head with defer -->
     <script type="module" src="js/firebase-config.js" defer></script>
     <script type="module" src="js/notifications.js" defer></script>
     <script type="module" src="js/visit-tracker.js" defer></script>
     <script type="module">
-        import { getFirestore, collection, query, where, getDocs, orderBy, Timestamp, serverTimestamp, limit } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+        import { getFirestore, collection, query, where, getDocs, orderBy, Timestamp, serverTimestamp, limit, doc, updateDoc, onSnapshot, getDoc, addDoc } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
 
         const db = getFirestore();
 
@@ -1168,60 +1198,121 @@
             return `${Math.floor(diffInMinutes / 1440)} days ago`;
         }
 
-        async function updateNotifications() {
+        async function updateNotifications(timeFrame = 'all time') {
             try {
                 const notificationsRef = collection(db, 'notifications');
                 
-                // Get unread count
-                const unreadQuery = query(notificationsRef, where('read', '==', false));
-                const unreadSnapshot = await getDocs(unreadQuery);
-                const unreadCount = unreadSnapshot.size;
-
-                // Get most recent notification
-                const recentQuery = query(
+                // Use real-time listener for notifications
+                const notificationsQuery = query(
                     notificationsRef,
-                    orderBy('timestamp', 'desc'),
-                    limit(1)
+                    orderBy('timestamp', 'desc')
                 );
-                const recentSnapshot = await getDocs(recentQuery);
-                
-                // Update notification count and label
-                const notificationLabel = document.querySelector('.notifications-card .stats-label');
-                if (notificationLabel) {
-                    notificationLabel.innerHTML = `
-                        <span class="notification-count">${unreadCount}</span> unread notification${unreadCount !== 1 ? 's' : ''}
-                        <span class="notification-dot" style="display: ${unreadCount > 0 ? 'inline-block' : 'none'}"></span>
-                    `;
-                }
 
-                // Update notification content
-                const notificationTitleElement = document.querySelector('.notifications-card .stats-value');
-                const notificationMessageElement = document.querySelector('.notifications-card .notification-message');
-                
-                if (!recentSnapshot.empty) {
-                    const recentNotification = recentSnapshot.docs[0].data();
-                    
-                    if (notificationTitleElement) {
-                        notificationTitleElement.textContent = getNotificationTitle(recentNotification.type);
-                    }
-                    
-                    if (notificationMessageElement) {
-                        const formattedTime = formatTime(recentNotification.timestamp);
-                        notificationMessageElement.innerHTML = `
-                            ${recentNotification.message || ''}
-                            <div style="color: #999; font-size: 0.8rem; margin-top: 0.5rem;">
-                                ${formattedTime}
-                            </div>
+                const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
+                    const notifications = [];
+                    let unreadCount = 0;
+
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const now = new Date();
+                        let notificationTime;
+                        
+                        // Convert timestamp to Date object
+                        if (data.timestamp?.seconds) {
+                            notificationTime = new Date(data.timestamp.seconds * 1000);
+                        } else if (data.timestamp?.toDate instanceof Function) {
+                            notificationTime = data.timestamp.toDate();
+                        } else if (data.timestamp instanceof Date) {
+                            notificationTime = data.timestamp;
+                        } else if (typeof data.timestamp === 'string') {
+                            notificationTime = new Date(data.timestamp);
+                        } else {
+                            notificationTime = new Date();
+                        }
+
+                        // Filter based on time frame
+                        let includeNotification = true;
+                        if (timeFrame.toLowerCase() === 'today') {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            includeNotification = notificationTime >= today;
+                        } else if (timeFrame.toLowerCase() === 'this week') {
+                            const weekAgo = new Date();
+                            weekAgo.setDate(weekAgo.getDate() - 7);
+                            includeNotification = notificationTime >= weekAgo;
+                        }
+
+                        if (includeNotification) {
+                            notifications.push({
+                                id: doc.id,
+                                ...data
+                            });
+                            if (!data.read) unreadCount++;
+                        }
+                    });
+
+                    // Sort notifications by timestamp to ensure most recent is first
+                    notifications.sort((a, b) => {
+                        let aTime = a.timestamp;
+                        let bTime = b.timestamp;
+                        
+                        // Convert timestamps to milliseconds for comparison
+                        if (aTime?.seconds) aTime = aTime.seconds * 1000;
+                        else if (aTime?.toDate instanceof Function) aTime = aTime.toDate().getTime();
+                        else if (aTime instanceof Date) aTime = aTime.getTime();
+                        else if (typeof aTime === 'string') aTime = new Date(aTime).getTime();
+                        else aTime = 0;
+                        
+                        if (bTime?.seconds) bTime = bTime.seconds * 1000;
+                        else if (bTime?.toDate instanceof Function) bTime = bTime.toDate().getTime();
+                        else if (bTime instanceof Date) bTime = bTime.getTime();
+                        else if (typeof bTime === 'string') bTime = new Date(bTime).getTime();
+                        else bTime = 0;
+                        
+                        return bTime - aTime;
+                    });
+
+                    // Update notification count and label
+                    const notificationLabel = document.querySelector('.notifications-card .stats-label');
+                    if (notificationLabel) {
+                        notificationLabel.innerHTML = `
+                            <span class="notification-count">${unreadCount}</span> unread notification${unreadCount !== 1 ? 's' : ''}
+                            <span class="notification-dot" style="display: ${unreadCount > 0 ? 'inline-block' : 'none'}"></span>
                         `;
                     }
-                } else {
-                    if (notificationTitleElement) {
-                        notificationTitleElement.textContent = 'No notifications';
+
+                    // Update notification content with most recent notification
+                    const notificationTitleElement = document.querySelector('.notifications-card .stats-value');
+                    const notificationMessageElement = document.querySelector('.notifications-card .notification-message');
+                    
+                    if (notifications.length > 0) {
+                        const recentNotification = notifications[0];
+                        
+                        if (notificationTitleElement) {
+                            notificationTitleElement.textContent = getNotificationTitle(recentNotification.type);
+                        }
+                        
+                        if (notificationMessageElement) {
+                            const formattedTime = formatTime(recentNotification.timestamp);
+                            notificationMessageElement.innerHTML = `
+                                ${recentNotification.message || ''}
+                                <div style="color: #999; font-size: 0.8rem; margin-top: 0.5rem;">
+                                    ${formattedTime}
+                                </div>
+                            `;
+                        }
+                    } else {
+                        if (notificationTitleElement) {
+                            notificationTitleElement.textContent = 'No notifications';
+                        }
+                        if (notificationMessageElement) {
+                            notificationMessageElement.textContent = 'You have no notifications at this time.';
+                        }
                     }
-                    if (notificationMessageElement) {
-                        notificationMessageElement.textContent = 'You have no notifications at this time.';
-                    }
-                }
+                });
+
+                // Store unsubscribe function for cleanup
+                window.notificationUnsubscribe = unsubscribe;
 
             } catch (error) {
                 console.error('Error updating notifications:', error);
@@ -1256,7 +1347,7 @@
             }
         }
 
-        async function updateSubmissions() {
+        async function updateSubmissions(searchTerm = '') {
             try {
                 const submissionsRef = collection(db, 'submissions');
                 
@@ -1273,16 +1364,29 @@
                         id: doc.id,
                         ...doc.data()
                     }))
-                    .filter(submission => 
+                    .filter(submission => {
                         // Check for both 'pending' and 'PENDING' status, or if status is not set
-                        submission.status?.toLowerCase() === 'pending' || 
-                        !submission.status
-                    )
+                        const isPending = submission.status?.toLowerCase() === 'pending' || !submission.status;
+                        
+                        // If no search term, just return the pending status check
+                        if (searchTerm === '') return isPending;
+                        
+                        // Format category for display (same as in the table)
+                        const formattedCategory = submission.category ? 
+                            submission.category.split('-').map(word => 
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            ).join(' ') : 'Other';
+                        
+                        // Check if search term matches any of the fields
+                        const searchTermLower = searchTerm.toLowerCase();
+                        return isPending && (
+                            submission.name?.toLowerCase().includes(searchTermLower) ||
+                            submission.category?.toLowerCase().includes(searchTermLower) ||
+                            formattedCategory.toLowerCase().includes(searchTermLower)
+                        );
+                    })
                     .slice(0, 10); // Only take the 10 most recent
 
-                console.log('All submissions:', submissionsSnapshot.docs.map(doc => doc.data().status));
-                console.log('Pending submissions:', pendingSubmissions);
-                
                 // Update submissions count
                 const submissionsCount = document.querySelector('.submissions-count');
                 if (submissionsCount) {
@@ -1304,6 +1408,11 @@
                         const timestamp = submission.timestamp?.toDate ? submission.timestamp.toDate() : new Date();
                         const formattedTime = formatTime(timestamp);
                         
+                        // Debug logging
+                        console.log('Submission data:', submission);
+                        console.log('Attachments:', submission.attachments);
+                        console.log('Images:', submission.images);
+                        
                         // Calculate days since submission
                         const now = new Date();
                         const daysSinceSubmission = Math.floor((now - timestamp) / (1000 * 60 * 60 * 24));
@@ -1319,11 +1428,11 @@
                         }
                         
                         submissionsHTML += `
-                            <tr>
-                                <td><input type="checkbox" data-id="${submission.id}"></td>
+                            <tr onclick="this.querySelector('input[type=checkbox]').click()" style="cursor: pointer;">
+                                <td><input type="checkbox" data-id="${submission.id}" onclick="event.stopPropagation(); updateSelectedCount();"></td>
                                 <td>
                                     <div class="submission-name">${submission.name || 'Unnamed Submission'}</div>
-                                    <div class="submission-attachments">${submission.attachments || 0} attachments</div>
+                                    <div class="submission-attachments">${submission.imageUrls?.length || 0} attachments</div>
                                 </td>
                                 <td>
                                     <span class="priority-${priority}">${
@@ -1338,7 +1447,7 @@
                                     <span class="submission-status status-pending">Pending</span>
                                 </td>
                                 <td>
-                                    <i class="fas fa-chevron-right" style="color: #666;"></i>
+                                    <i class="fas fa-chevron-right" style="color: rgba(255, 255, 255, 0.5);"></i>
                                 </td>
                             </tr>
                         `;
@@ -1355,7 +1464,7 @@
                     submissionsList.innerHTML = `
                         <tr>
                             <td colspan="7" style="text-align: center; padding: 2rem;">
-                                No pending submissions found
+                                ${searchTerm ? 'No matching submissions found' : 'No pending submissions found'}
                             </td>
                         </tr>
                     `;
@@ -1389,86 +1498,142 @@
             updateStats();
             
             // Add event listener for time period changes
-            const timeSelector = document.querySelector('.time-selector');
-            if (timeSelector) {
-                timeSelector.addEventListener('change', (e) => {
-                    updateVisitCount(e.target.value);
+            const timeSelectors = document.querySelectorAll('.time-selector');
+            timeSelectors.forEach(selector => {
+                selector.addEventListener('change', (e) => {
+                    if (e.target.closest('.visitors-card')) {
+                        updateVisitCount(e.target.value);
+                    } else if (e.target.closest('.notifications-card')) {
+                        updateNotifications(e.target.value);
+                    }
                 });
-            }
+            });
+
+            // Add event listener for search inputs
+            const searchInputs = document.querySelectorAll('.submissions-search input, .artist-search input');
+            searchInputs.forEach(input => {
+                let searchTimeout;
+                input.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        if (e.target.closest('.submissions-search')) {
+                            updateSubmissions(e.target.value);
+                        } else if (e.target.closest('.artist-search')) {
+                            updateArtistPages(e.target.value);
+                        }
+                    }, 300); // Debounce search by 300ms
+                });
+            });
         });
 
-        async function updateArtistPages() {
+        function updateArtistPages(searchTerm = '') {
             try {
-                // Get all submissions first, then filter in memory
+                // Set up real-time listener for submissions
                 const submissionsRef = collection(db, 'submissions');
-                const submissionsSnapshot = await getDocs(submissionsRef);
+                const submissionsQuery = query(submissionsRef, orderBy('timestamp', 'desc'));
                 
-                // Create a map to store unique artists and their latest submission
-                const artistsMap = new Map();
-                
-                submissionsSnapshot.forEach(doc => {
-                    const submission = doc.data();
-                    // Only process approved submissions
-                    if (submission.status === 'approved') {
-                        const artistName = submission.name;
+                // Create unsubscribe function to clean up listener
+                const unsubscribe = onSnapshot(submissionsQuery, (snapshot) => {
+                    // Create a map to store unique artists and their latest submission
+                    const artistsMap = new Map();
+                    
+                    snapshot.forEach(doc => {
+                        const submission = { id: doc.id, ...doc.data() };
+                        // Only process approved submissions
+                        if (submission.status === 'approved') {
+                            const artistName = submission.name;
+                            
+                            // Only update the map if this is the first time we see this artist
+                            // or if this submission is more recent
+                            if (!artistsMap.has(artistName) || 
+                                submission.timestamp > artistsMap.get(artistName).timestamp) {
+                                artistsMap.set(artistName, submission);
+                            }
+                        }
+                    });
+
+                    // Convert map to array and sort by timestamp
+                    const artists = Array.from(artistsMap.values())
+                        .filter(artist => {
+                            if (searchTerm === '') return true;
+                            
+                            // Format category for display (same as in the table)
+                            const formattedCategory = artist.category ? 
+                                artist.category.split('-').map(word => 
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ') : 'Other';
+                            
+                            // Check if search term matches any of the fields
+                            const searchTermLower = searchTerm.toLowerCase();
+                            return artist.name?.toLowerCase().includes(searchTermLower) ||
+                                   artist.category?.toLowerCase().includes(searchTermLower) ||
+                                   formattedCategory.toLowerCase().includes(searchTermLower);
+                        })
+                        .sort((a, b) => {
+                            // Convert timestamps for comparison
+                            const getTime = (timestamp) => {
+                                if (timestamp?.toMillis) return timestamp.toMillis();
+                                if (timestamp?.seconds) return timestamp.seconds * 1000;
+                                if (timestamp instanceof Date) return timestamp.getTime();
+                                return 0;
+                            };
+                            // Use updatedAt for sorting, fallback to timestamp if updatedAt is not available
+                            const aTime = getTime(a.updatedAt || a.timestamp);
+                            const bTime = getTime(b.updatedAt || b.timestamp);
+                            return bTime - aTime;
+                        })
+                        .slice(0, 5); // Get only the 5 most recent
+
+                    const artistList = document.getElementById('artist-list');
+                    const activeArtistCount = document.getElementById('active-artist-count');
+                    
+                    if (artistList && artists.length > 0) {
+                        let artistsHTML = '';
                         
-                        // Only update the map if this is the first time we see this artist
-                        // or if this submission is more recent
-                        if (!artistsMap.has(artistName) || 
-                            submission.timestamp > artistsMap.get(artistName).timestamp) {
-                            artistsMap.set(artistName, submission);
+                        artists.forEach(artist => {
+                            // Use updatedAt (approval time) instead of initial submission time
+                            const approvalTime = artist.updatedAt || artist.timestamp;
+                            const lastUpdated = formatTime(approvalTime);
+                            
+                            artistsHTML += `
+                                <tr onclick="window.location='artist.html?name=${encodeURIComponent(artist.name)}'" style="cursor: pointer;">
+                                    <td>
+                                        <div class="artist-name">
+                                            ${artist.name || 'Unnamed Artist'}
+                                        </div>
+                                    </td>
+                                    <td>${artist.category ? artist.category.split('-').map(word => 
+                                        word.charAt(0).toUpperCase() + word.slice(1)
+                                    ).join(' ') : 'Other'}</td>
+                                    <td>${lastUpdated}</td>
+                                    <td>
+                                        <i class="fas fa-chevron-right" style="color: rgba(255, 255, 255, 0.5);"></i>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        artistList.innerHTML = artistsHTML;
+                        if (activeArtistCount) {
+                            activeArtistCount.textContent = artistsMap.size;
+                        }
+                    } else if (artistList) {
+                        artistList.innerHTML = `
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 2rem;">
+                                    ${searchTerm ? 'No matching artists found' : 'No artist pages found'}
+                                </td>
+                            </tr>
+                        `;
+                        if (activeArtistCount) {
+                            activeArtistCount.textContent = '0';
                         }
                     }
                 });
 
-                // Convert map to array and sort by timestamp
-                const artists = Array.from(artistsMap.values())
-                    .sort((a, b) => b.timestamp - a.timestamp)
-                    .slice(0, 5); // Get only the 5 most recent
+                // Store unsubscribe function for cleanup
+                window.artistPagesUnsubscribe = unsubscribe;
 
-                const artistList = document.getElementById('artist-list');
-                const activeArtistCount = document.getElementById('active-artist-count');
-                
-                if (artistList && artists.length > 0) {
-                    let artistsHTML = '';
-                    
-                    artists.forEach(artist => {
-                        const lastUpdated = formatTime(artist.timestamp);
-                        
-                        artistsHTML += `
-                            <tr>
-                                <td>
-                                    <div class="artist-name">
-                                        ${artist.name || 'Unnamed Artist'}
-                                    </div>
-                                </td>
-                                <td>${artist.category ? artist.category.split('-').map(word => 
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                ).join(' ') : 'Other'}</td>
-                                <td>${lastUpdated}</td>
-                                <td>
-                                    <i class="fas fa-chevron-right" style="color: #666;"></i>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    
-                    artistList.innerHTML = artistsHTML;
-                    if (activeArtistCount) {
-                        activeArtistCount.textContent = artistsMap.size;
-                    }
-                } else if (artistList) {
-                    artistList.innerHTML = `
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 2rem;">
-                                No artist pages found
-                            </td>
-                        </tr>
-                    `;
-                    if (activeArtistCount) {
-                        activeArtistCount.textContent = '0';
-                    }
-                }
             } catch (error) {
                 console.error('Error updating artist pages:', error);
                 const artistList = document.getElementById('artist-list');
@@ -1509,7 +1674,7 @@
                         const submittedTime = formatTime(change.timestamp);
                         
                         changesHTML += `
-                            <tr>
+                            <tr onclick="window.location='artist-changes.html'">
                                 <td>
                                     <div class="artist-name">
                                         ${change.artistName || 'Unknown Artist'}
@@ -1517,7 +1682,7 @@
                                 </td>
                                 <td>${submittedTime}</td>
                                 <td>
-                                    <i class="fas fa-chevron-right" style="color: #666;"></i>
+                                    <i class="fas fa-chevron-right" style="color: rgba(255, 255, 255, 0.5);"></i>
                                 </td>
                             </tr>
                         `;
@@ -1554,8 +1719,95 @@
             }
         }
 
-        // Add to your existing DOMContentLoaded event listener
+        async function handleSubmissionAction(action) {
+            const selectedCheckboxes = document.querySelectorAll('#submissions-list input[type="checkbox"]:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one submission');
+                return;
+            }
+
+            try {
+                const submissionsRef = collection(db, 'submissions');
+                const notificationsRef = collection(db, 'notifications');
+                
+                for (const checkbox of selectedCheckboxes) {
+                    const submissionId = checkbox.dataset.id;
+                    const submissionRef = doc(db, 'submissions', submissionId);
+                    
+                    // Get the submission data first
+                    const submissionDoc = await getDoc(submissionRef);
+                    const submissionData = submissionDoc.data();
+                    
+                    // Update the submission status
+                    await updateDoc(submissionRef, {
+                        status: action,
+                        updatedAt: serverTimestamp()
+                    });
+
+                    // Create a notification
+                    const notificationType = action === 'approved' ? 'submission_approved' : 'submission_rejected';
+                    const notificationMessage = action === 'approved' 
+                        ? `Submission from ${submissionData.name} has been approved`
+                        : `Submission from ${submissionData.name} has been rejected`;
+
+                    await addDoc(notificationsRef, {
+                        type: notificationType,
+                        message: notificationMessage,
+                        timestamp: serverTimestamp(),
+                        read: false,
+                        submissionId: submissionId,
+                        artistName: submissionData.name
+                    });
+                }
+
+                // Refresh the submissions list
+                await updateSubmissions();
+                // Update the counts
+                await updateStats();
+                
+                // Clear selection
+                const selectedTag = document.querySelector('.filter-tag');
+                if (selectedTag) {
+                    selectedTag.textContent = '0 selected';
+                }
+                
+                // Update header checkbox
+                const headerCheckbox = document.querySelector('.submissions-table thead input[type="checkbox"]');
+                if (headerCheckbox) {
+                    headerCheckbox.checked = false;
+                }
+
+            } catch (error) {
+                console.error('Error updating submissions:', error);
+                alert('Error updating submissions. Please try again.');
+            }
+        }
+
+        // Add event listeners for the buttons
         document.addEventListener('DOMContentLoaded', () => {
+            const approveButton = document.querySelector('.action-button.approve');
+            const rejectButton = document.querySelector('.action-button.reject');
+            const headerCheckbox = document.querySelector('.submissions-table thead input[type="checkbox"]');
+
+            if (approveButton) {
+                approveButton.addEventListener('click', () => handleSubmissionAction('approved'));
+            }
+            
+            if (rejectButton) {
+                rejectButton.addEventListener('click', () => handleSubmissionAction('rejected'));
+            }
+
+            // Add "select all" functionality to header checkbox
+            if (headerCheckbox) {
+                headerCheckbox.addEventListener('change', (e) => {
+                    const checkboxes = document.querySelectorAll('#submissions-list input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = e.target.checked;
+                    });
+                    updateSelectedCount();
+                });
+            }
+
             updateStats();
             updateArtistPages();
             updateArtistChanges();
@@ -1588,18 +1840,19 @@
     </nav>
 
     <main class="dashboard-container">
-        <div class="welcome-section">
-            <h1 class="welcome-title">Welcome,<br><span class="welcome-name">James</span></h1>
-        </div>
-
         <div class="header-section">
-            <div class="unread-section">
-                <div class="unread-count-container">
-                    <div class="unread-count" id="header-unread-count">3</div>
+            <div class="header-left">
+                <div class="unread-section">
+                    <div class="unread-count-container">
+                        <div class="unread-count" id="header-unread-count">3</div>
+                    </div>
+                    <div class="unread-label">Pending<br>Submissions</div>
                 </div>
-                <div class="unread-label">Pending<br>Submissions</div>
+                <a href="admin-messages.html" class="show-submissions-btn">Show Submissions</a>
             </div>
-            <a href="admin-messages.html" class="show-submissions-btn">Show Submissions</a>
+            <div class="welcome-section">
+                <h1 class="welcome-title">Welcome,<br><span class="welcome-name">Admin</span></h1>
+            </div>
         </div>
 
         <div class="stats-cards-container">
@@ -1628,9 +1881,9 @@
                     </div>
                     <div class="time-selector-wrapper">
                         <select class="time-selector">
-                            <option>All</option>
-                            <option>Unread</option>
-                            <option>Read</option>
+                            <option>All Time</option>
+                            <option>Today</option>
+                            <option>This Week</option>
                         </select>
                     </div>
                 </div>
@@ -1673,7 +1926,7 @@
                 <table class="submissions-table">
                     <thead>
                         <tr>
-                            <th style="width: 30px;"><input type="checkbox"></th>
+                            <th></th>
                             <th>Name</th>
                             <th>Priority</th>
                             <th>Category</th>
@@ -1734,12 +1987,6 @@
                             <span class="changes-count" id="pending-changes-count">0</span>
                         </div>
                         <div class="stats-subtitle">Review pending changes to artist pages.</div>
-                    </div>
-                    <div class="changes-actions">
-                        <div class="changes-search">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search changes...">
-                        </div>
                     </div>
                 </div>
 

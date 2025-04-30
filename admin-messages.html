@@ -7,219 +7,601 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .messages-container {
-            padding: calc(var(--navbar-height) + 2rem) 2rem 2rem 2rem;
+        /* Override navbar styles for this page */
+        .navbar {
+            background: transparent;
+            border-bottom: none;
         }
-        .dashboard-header {
-            margin-bottom: 2rem;
-        }
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .controls-container {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        .search-container {
-            flex: 1;
-            min-width: 250px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        .filter-container {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        .filter-btn {
-            padding: 0.8rem 1.2rem;
-            border: 1px solid #000;
-            background: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            color: #000;
-        }
-        .filter-btn.active {
-            background: #000;
+
+        .navbar .nav-brand a,
+        .navbar .nav-links a,
+        .navbar .nav-submit-button {
             color: white;
         }
-        .sort-container {
+
+        .navbar .nav-submit-button {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar .nav-submit-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu span {
+            background-color: white;
+        }
+
+        .notification-bell i {
+            color: white;
+        }
+
+        /* Page specific styles */
+        body {
+            background: #111111;
+            color: white;
+        }
+
+        .messages-container {
+            padding: calc(var(--navbar-height) + 2rem) 2rem 2rem 2rem;
+            max-width: 2200px;
+            margin: 0 auto;
+            min-height: calc(100vh - var(--navbar-height));
+        }
+
+        .dashboard-header {
             display: flex;
-            gap: 0.5rem;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            padding-top: 1rem;
+        }
+
+        .header-top {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .header-left {
+            display: flex;
+            gap: 3rem;
             align-items: center;
         }
-        .sort-select {
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9rem;
+
+        .header-welcome {
+            padding-top: 0;
         }
-        .message-card {
-            background: white;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        .unread-count-container {
+            background: #111111;
+            border-radius: 32px;
+            width: 160px;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: transform 0.2s ease;
-            position: relative;
         }
+
+        .unread-count-container:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .unread-count {
+            font-size: 4.5rem;
+            font-weight: 500;
+            line-height: 1;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .unread-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+
+        .welcome-section {
+            text-align: left;
+            padding-left: 1rem;
+        }
+
+        .welcome-title {
+            font-size: 3.5rem;
+            font-weight: 500;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            color: white;
+        }
+
+        .welcome-name {
+            display: block;
+            margin-top: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            letter-spacing: -0.01em;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-left: auto;
+        }
+
+        .stat-card {
+            background: #2f2f2f;
+            padding: 1.75rem 2rem;
+            border-radius: 24px;
+            text-align: center;
+            color: white;
+            min-width: 180px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            background: #3f3f3f;
+        }
+
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            letter-spacing: -0.01em;
+        }
+
+        .controls-container {
+            background: #2f2f2f;
+            padding: 2rem;
+            width: 100%;
+            border-radius: 32px;
+            margin-bottom: 2rem;
+        }
+
+        .controls-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .controls-title {
+            font-size: 1.7rem;
+            font-weight: 500;
+            color: white;
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+
+        .controls-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-input {
+            background: #3f3f3f;
+            border: none;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border-radius: 100px;
+            width: 100%;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filter-btn {
+            background: #3f3f3f;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: #4f4f4f;
+        }
+
+        .filter-btn.active {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .filter-btn.active:hover {
+            background: #ff3b30;
+        }
+
+        .dropdowns-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .category-select {
+            background: #3f3f3f url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 1rem center;
+            border: none;
+            padding: 0.75rem 3rem 0.75rem 1.5rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            color: white;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: background-color 0.2s ease;
+            min-width: 180px;
+        }
+
+        .category-select:hover,
+        .sort-select:hover {
+            background-color: #4f4f4f;
+        }
+
+        .category-select:focus,
+        .sort-select:focus {
+            outline: none;
+            background-color: #4f4f4f;
+        }
+
+        .sort-select {
+            background: #3f3f3f url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 1rem center;
+            border: none;
+            padding: 0.75rem 3rem 0.75rem 1.5rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            color: white;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: background-color 0.2s ease;
+            min-width: 160px;
+        }
+
+        .message-card {
+            background: #2f2f2f;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 32px;
+            transition: all 0.2s ease;
+            position: relative;
+            border-left: 6px solid transparent;
+            overflow: hidden;
+        }
+
         .message-card:hover {
             transform: translateY(-2px);
+            background: #3f3f3f;
         }
+
+        .message-card.pending {
+            border-left-color: #f57c00;
+        }
+
+        .message-card.approved {
+            border-left-color: #2e7d32;
+        }
+
+        .message-card.rejected {
+            border-left-color: #c62828;
+        }
+
         .message-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
         }
+
         .message-meta {
-            color: #666;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
+
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .artist-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .artist-name {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .artist-category {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: -0.01em;
+        }
+
+        .message-date {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
         .message-content {
-            white-space: pre-wrap;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #eee;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
         }
+
         .artwork-preview {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
+
         .artwork-image {
             width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 4px;
-            background: #f8f8f8;
-            transition: transform 0.2s ease;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 16px;
+            background: #3f3f3f;
+            transition: transform 0.3s ease;
         }
+
         .artwork-image:hover {
             transform: scale(1.02);
         }
-        .pending {
-            border-left: 4px solid #f0ad4e;
+
+        .submission-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
-        .approved {
-            border-left: 4px solid #5cb85c;
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
         }
-        .rejected {
-            border-left: 4px solid #d9534f;
+
+        .status-approved {
+            background: #e8f5e9;
+            color: #2e7d32;
         }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #c62828;
+        }
+
         .no-results {
             text-align: center;
-            padding: 2rem;
-            color: #666;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.7);
+            background: #2f2f2f;
+            border-radius: 32px;
         }
+
         .category-tag {
             display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
             font-size: 0.8rem;
             margin-right: 0.5rem;
-            color: white;
+            font-weight: 500;
         }
-        .category-tag.photography { background-color: #4ECDC4; }
-        .category-tag.graphic-design { background-color: #96CEB4; }
-        .category-tag.painter { background-color: #FF6B6B; }
-        .category-tag.web-designer { background-color: #45B7D1; }
-        .category-tag.cinematographer { background-color: #7C4DFF; }
-        .category-tag.magazine-editor { background-color: #FF4081; }
-        .category-tag.illustrator { background-color: #FFA726; }
 
         .category-filter {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
+            width: 100%;
         }
+
         .category-filter button {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.2rem;
             border: none;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
             cursor: pointer;
             color: white;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
+            background: #3f3f3f;
+            transition: all 0.2s ease;
         }
+
         .category-filter button.active {
-            opacity: 1;
+            background: #ff3b30;
         }
-        .category-filter button[data-category="photography"] { background-color: #4ECDC4; }
-        .category-filter button[data-category="graphic-design"] { background-color: #96CEB4; }
-        .category-filter button[data-category="painter"] { background-color: #FF6B6B; }
-        .category-filter button[data-category="web-designer"] { background-color: #45B7D1; }
-        .category-filter button[data-category="cinematographer"] { background-color: #7C4DFF; }
-        .category-filter button[data-category="magazine-editor"] { background-color: #FF4081; }
-        .category-filter button[data-category="illustrator"] { background-color: #FFA726; }
 
         .action-buttons {
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
+
         .approve-btn, .reject-btn, .delete-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 100px;
             cursor: pointer;
             font-size: 0.9rem;
-            transition: opacity 0.3s ease;
+            transition: all 0.2s ease;
         }
+
         .approve-btn {
-            background-color: #5cb85c;
+            background: #ff3b30;
             color: white;
         }
+
         .reject-btn {
-            background-color: #d9534f;
+            background: #3f3f3f;
             color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
         .delete-btn {
-            background-color: #333;
+            background: #c62828;
             color: white;
+            border: none;
         }
-        .approve-btn:hover, .reject-btn:hover, .delete-btn:hover {
-            opacity: 0.8;
+
+        .delete-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
         }
+
+        .approve-btn:hover, .reject-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
         .artist-link {
-            color: #000;
+            color: white;
             text-decoration: none;
-            border-bottom: 1px solid #000;
-            transition: opacity 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.2s ease;
         }
+
         .artist-link:hover {
+            border-color: white;
+        }
+
+        footer {
+            background: transparent;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+                padding-top: 1rem;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .unread-count-container {
+                width: 140px;
+                height: 140px;
+            }
+
+            .unread-count {
+                font-size: 4rem;
+            }
+
+            .welcome-section {
+                text-align: left;
+            }
+
+            .welcome-title {
+                font-size: 3rem;
+            }
+
+            .controls-container {
+                padding: 1.5rem;
+            }
+
+            .message-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Override artist name styles specifically for this page */
+        .message-card .artist-name {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: white;
+            margin: 0;
+        }
+
+        .message-card .artist-name .artist-link {
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s ease;
+        }
+
+        .message-card .artist-name .artist-link:hover {
             opacity: 0.7;
+        }
+
+        .message-card .artist-name .link-arrow {
+            font-size: 1.2em;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+
+        .message-card .artist-name .artist-link:hover .link-arrow {
+            transform: translate(2px, -2px);
+        }
+
+        .artist-category {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: -0.01em;
         }
     </style>
     <!-- Load Firebase scripts in head with defer -->
@@ -256,47 +638,61 @@
 
     <main class="messages-container">
         <div class="dashboard-header">
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-number" id="total-messages">0</div>
-                    <div class="stat-label">Total Submissions</div>
+            <div class="header-top">
+                <div class="header-left">
+                    <div class="header-welcome">
+                        <h1 class="welcome-title">Submission<br>Review</h1>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="pending-count">0</div>
-                    <div class="stat-label">Pending Review</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="today-count">0</div>
-                    <div class="stat-label">Today's Submissions</div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-messages">6</div>
+                        <div class="stat-label">Total Submissions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pending-count">1</div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="today-count">2</div>
+                        <div class="stat-label">Today's Submissions</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="category-filter">
-                <button class="active" data-category="all">All</button>
-                <button data-category="photography">Photography</button>
-                <button data-category="graphic-design">Graphic Design</button>
-                <button data-category="painter">Painter</button>
-                <button data-category="web-designer">Web Designer</button>
-                <button data-category="cinematographer">Cinematographer</button>
-                <button data-category="magazine-editor">Magazine Editor</button>
-                <button data-category="illustrator">Illustrator</button>
-            </div>
 
             <div class="controls-container">
+                <div class="controls-header">
+                    <h2 class="controls-title">Search and Filter</h2>
+                </div>
                 <div class="search-container">
                     <input type="text" id="search-input" class="search-input" placeholder="Search submissions...">
+                    <i class="fas fa-search"></i>
                 </div>
                 <div class="filter-container">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="pending">Pending</button>
-                    <button class="filter-btn" data-filter="approved">Approved</button>
-                    <button class="filter-btn" data-filter="rejected">Rejected</button>
-                </div>
-                <div class="sort-container">
-                    <select id="sort-select" class="sort-select">
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                    </select>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="pending">Pending</button>
+                        <button class="filter-btn" data-filter="approved">Approved</button>
+                        <button class="filter-btn" data-filter="rejected">Rejected</button>
+                    </div>
+                    <div class="dropdowns-container">
+                        <select id="category-select" class="category-select">
+                            <option value="all">All Categories</option>
+                            <option value="photography">Photography</option>
+                            <option value="graphic-design">Graphic Design</option>
+                            <option value="painter">Painter</option>
+                            <option value="web-designer">Web Designer</option>
+                            <option value="cinematographer">Cinematographer</option>
+                            <option value="magazine-editor">Magazine Editor</option>
+                            <option value="illustrator">Illustrator</option>
+                        </select>
+                        <select id="sort-select" class="sort-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
