@@ -7,108 +7,1560 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Override navbar styles for this page */
+        .navbar {
+            background: transparent;
+            border-bottom: none;
+        }
+
+        .navbar .nav-brand a,
+        .navbar .nav-links a,
+        .navbar .nav-submit-button {
+            color: white;
+        }
+
+        .navbar .nav-submit-button {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar .nav-submit-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu span {
+            background-color: white;
+        }
+
+        .notification-bell i {
+            color: white;
+        }
+
+        /* Page specific styles */
+        body {
+            background: #111111;
+        }
+
+        .dashboard-container {
+            background: #111111;
+        }
+
+        .welcome-title {
+            color: white;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
         .dashboard-container {
             padding: calc(var(--navbar-height) + 4rem) 2rem 2rem 2rem;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             min-height: calc(100vh - var(--navbar-height));
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 4rem;
+            width: 100%;
+            padding-top: 2rem;
+        }
+
+        .unread-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .unread-count-container {
+            background: #111111;
+            border-radius: 32px;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .unread-count {
+            font-size: 5rem;
+            font-weight: 500;
+            line-height: 1;
+            color: #ffffff;
+        }
+
+        .unread-label {
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-weight: 500;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+
+        .show-submissions-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            background: #ff3b30;
+            color: white;
+            text-decoration: none;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            gap: 1rem;
+            box-shadow: 0 4px 20px rgba(255, 59, 48, 0.25);
+        }
+
+        .show-submissions-btn::after {
+            content: '→';
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+
+        .show-submissions-btn:hover::after {
+            transform: translateX(5px);
+        }
+
+        .welcome-section {
+            position: absolute;
+            top: calc(var(--navbar-height) + 4rem);
+            right: 2rem;
+            text-align: right;
+        }
+
+        .welcome-title {
+            font-size: 4rem;
+            font-weight: 500;
+            margin: 0;
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+        }
+
+        .welcome-name {
+            display: block;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .option-card {
+            background: #eeeeee;
+            padding: 2.5rem;
+            border-radius: 0px;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
+            border: 1px solid #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .option-card:hover {
+            border-color: #000;
+        }
+
+        .option-card:hover::after {
+            opacity: 1;
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #333;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .option-card:hover .option-icon {
+            transform: scale(1.1);
+        }
+
+        .option-title {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .option-description {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .option-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-button::after {
+            content: '→';
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .option-button:hover::after {
+            transform: translateX(5px);
+        }
+
+        .option-button:hover {
+            background: #333;
+            padding-right: 2.5rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            width: 100%;
+        }
+
+        .stat-item {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 4px;
+            flex: 1;
+            border: 1px solid #ddd;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 4rem;
+        .dots-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 0.5rem;
+            justify-content: center;
+            max-width: 100px;
         }
 
-        .dashboard-title {
+        .artist-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .artist-dot.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .stat-number {
             font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
             letter-spacing: -0.02em;
+            position: relative;
         }
 
-        .dashboard-subtitle {
-            color: #666;
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
+        .stat-number.loading {
+            color: transparent;
         }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            width: 100%;
-            max-width: 800px;
+        .stat-number.loading::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-top-color: #666;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 1s linear infinite;
         }
 
-        .option-card {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 8px;
-            text-align: center;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-            border: 1px solid #eee;
-        }
-
-        .option-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .option-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
-
-        .option-title {
+        .stat-number.error {
+            color: #ff4444;
             font-size: 1.5rem;
-            font-weight: 300;
-            margin-bottom: 1rem;
         }
 
-        .option-description {
+        .stat-label {
             color: #666;
             font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .option-button {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            background: #000;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .option-button:hover {
-            background: #333;
         }
 
         @media (max-width: 768px) {
-            .dashboard-container {
-                padding: calc(var(--navbar-height) + 2rem) 1rem 1rem 1rem;
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+                padding-top: 1rem;
             }
 
-            .dashboard-title {
-                font-size: 2rem;
+            .unread-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .unread-count-container {
+                width: 140px;
+                height: 140px;
+            }
+
+            .unread-count {
+                font-size: 4rem;
+            }
+
+            .unread-label {
+                font-size: 1.6rem;
+            }
+
+            .welcome-section {
+                position: static;
+                text-align: left;
+                margin-bottom: 2rem;
+            }
+
+            .welcome-title {
+                font-size: 3rem;
             }
 
             .options-grid {
                 grid-template-columns: 1fr;
             }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            .dashboard-container {
+                background: #111;
+            }
+
+            .option-card {
+                background: #111;
+                border-color: #333;
+            }
+
+            .option-card:hover {
+                border-color: #fff;
+            }
+
+            .welcome-title {
+                color: #fff;
+            }
+
+            .option-title {
+                color: #fff;
+            }
+
+            .stat-item {
+                background: #222;
+                border-color: #333;
+            }
+
+            .stat-number {
+                color: #fff;
+            }
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .stats-cards-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 32px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stats-card.visitors-card {
+            width: 300px;
+        }
+
+        .stats-card.notifications-card,
+        .stats-card.submissions-card {
+            width: 500px;
+        }
+
+        .submission-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-approved {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .notification-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 4px;
+            vertical-align: top;
+        }
+
+        .notification-count {
+            color: #ff3b30;
+            font-weight: 500;
+        }
+
+        .stats-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .view-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .view-icon i {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .time-selector {
+            background: #f5f5f5;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #333;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 2rem;
+            position: relative;
+        }
+
+        .time-selector-wrapper {
+            position: relative;
+        }
+
+        .time-selector-wrapper::after {
+            content: '▼';
+            font-size: 0.8rem;
+            color: #666;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .stats-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-value {
+            font-size: 1.7rem;
+            font-weight: 500;
+            color: #111;
+            letter-spacing: -0.02em;
+        }
+
+        .stats-card.submissions-card {
+            width: 100%;
+            padding: 2rem;
+        }
+
+        .submissions-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .submissions-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .submissions-count {
+            background: #ff3b30;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .submissions-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .submissions-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .submissions-search {
+            position: relative;
+        }
+
+        .submissions-search input {
+            background: #f5f5f5;
+            border: none;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border-radius: 100px;
+            width: 300px;
+            font-size: 0.9rem;
+        }
+
+        .submissions-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .submissions-filters {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .filter-tag {
+            background: #f5f5f5;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .filter-tag.active {
+            background: #111;
+            color: white;
+        }
+
+        .filter-tag .close {
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .submissions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .submissions-table th {
+            text-align: left;
+            padding: 1rem;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .submissions-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .submission-name {
+            font-weight: 500;
+            color: #111;
+        }
+
+        .submission-attachments {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .priority-low {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .priority-medium {
+            background: #fff3e0;
+            color: #f57c00;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background: #ffebee;
+            color: #ff3b30;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .submission-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .action-button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .action-button.reject {
+            background: white;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .action-button.approve {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stats-card.artist-pages-card {
+            width: 55%;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .artist-count {
+            background: #4CAF50;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .stats-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .stats-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .artist-search {
+            position: relative;
+        }
+
+        .artist-search input {
+            background: #f5f5f5;
+            border: none;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border-radius: 100px;
+            width: 250px;
+            font-size: 0.9rem;
+        }
+
+        .artist-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .artist-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .artist-table th {
+            text-align: left;
+            padding: 1rem;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 1px solid #eee;
+        }
+
+        .artist-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .artist-name {
+            font-weight: 500;
+            color: #111;
+        }
+
+        .artist-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .artist-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-draft {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .stats-card.artist-pages-card .artist-name {
+            margin-bottom: 0;
+        }
+
+        .stats-card.artist-changes-card {
+            width: 42%;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stats-card.artist-changes-card .stats-value {
+            font-size: 1.5rem;
+        }
+
+        .stats-card.artist-changes-card .stats-subtitle {
+            font-size: 0.8rem;
+        }
+
+        .stats-card.artist-changes-card .changes-search input {
+            font-size: 0.8rem;
+            width: 200px;
+        }
+
+        .stats-card.artist-changes-card .artist-name {
+            font-size: 0.9rem;
+        }
+
+        .stats-card.artist-changes-card td,
+        .stats-card.artist-changes-card th {
+            font-size: 0.9rem;
+        }
+
+        .changes-count {
+            background: #ff3b30;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .changes-search {
+            position: relative;
+        }
+
+        .changes-search input {
+            background: #f5f5f5;
+            border: none;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border-radius: 100px;
+            width: 250px;
+            font-size: 0.9rem;
+        }
+
+        .changes-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .changes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .changes-table th {
+            text-align: left;
+            padding: 1rem;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 1px solid #eee;
+        }
+
+        .changes-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .change-type {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        /* Specific dark styles for this page's cards */
+        .dashboard-container .stats-card {
+            background: #2f2f2f;
+        }
+
+        .dashboard-container .stats-card .stats-value,
+        .dashboard-container .stats-card .stats-subtitle,
+        .dashboard-container .stats-card .submission-name,
+        .dashboard-container .stats-card .artist-name,
+        .dashboard-container .stats-card th,
+        .dashboard-container .stats-card td {
+            color: white;
+        }
+
+        .dashboard-container .stats-card .stats-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .dashboard-container .stats-card .submissions-search input,
+        .dashboard-container .stats-card .changes-search input,
+        .dashboard-container .stats-card .artist-search input {
+            background: #3f3f3f;
+            color: white;
+        }
+
+        .dashboard-container .stats-card .submissions-search input::placeholder,
+        .dashboard-container .stats-card .changes-search input::placeholder,
+        .dashboard-container .stats-card .artist-search input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .dashboard-container .stats-card .submissions-search i,
+        .dashboard-container .stats-card .changes-search i,
+        .dashboard-container .stats-card .artist-search i {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .dashboard-container .stats-card table th {
+            color: rgba(255, 255, 255, 0.7);
+            border-bottom-color: #3f3f3f;
+        }
+
+        .dashboard-container .stats-card table td {
+            border-bottom-color: #3f3f3f;
+        }
+
+        .dashboard-container .stats-card .submission-attachments {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .dashboard-container .stats-card .fa-chevron-right {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .dashboard-container .stats-card .filter-tag {
+            background: #3f3f3f;
+            color: white;
         }
     </style>
     <!-- Load Firebase scripts in head with defer -->
     <script type="module" src="js/firebase-config.js" defer></script>
     <script type="module" src="js/notifications.js" defer></script>
+    <script type="module" src="js/visit-tracker.js" defer></script>
+    <script type="module">
+        import { getFirestore, collection, query, where, getDocs, orderBy, Timestamp, serverTimestamp, limit } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+
+        const db = getFirestore();
+
+        async function updateStats() {
+            try {
+                // Query for unread submissions
+                const submissionsRef = collection(db, 'submissions');
+                const unreadQuery = query(submissionsRef, where('status', '==', 'unread'));
+                const unreadSnapshot = await getDocs(unreadQuery);
+
+                // Query for active artists (those with approved submissions)
+                const approvedQuery = query(submissionsRef, where('status', '==', 'approved'));
+                const approvedSnapshot = await getDocs(approvedQuery);
+                
+                // Create a Set of unique artist names from approved submissions
+                const uniqueArtists = new Set();
+                approvedSnapshot.forEach(doc => {
+                    uniqueArtists.add(doc.data().name);
+                });
+
+                // Query for pending changes
+                const pendingChangesRef = collection(db, 'pendingChanges');
+                const pendingQuery = query(pendingChangesRef, where('status', '==', 'pending'));
+                const pendingSnapshot = await getDocs(pendingQuery);
+
+                // Update all stats
+                const unreadCountElement = document.getElementById('unread-count');
+                const creativesCountElement = document.getElementById('creatives-count');
+                const pendingCountElement = document.getElementById('pending-count');
+                const dotsContainer = document.getElementById('artists-dots');
+
+                if (unreadCountElement) {
+                    unreadCountElement.textContent = unreadSnapshot.size;
+                }
+                if (creativesCountElement) {
+                    creativesCountElement.textContent = uniqueArtists.size;
+                    
+                    // Update dots
+                    if (dotsContainer) {
+                        // Clear existing dots
+                        dotsContainer.innerHTML = '';
+                        
+                        // Add new dots
+                        const artistCount = uniqueArtists.size;
+                        for (let i = 0; i < artistCount; i++) {
+                            const dot = document.createElement('div');
+                            dot.className = 'artist-dot';
+                            dotsContainer.appendChild(dot);
+                            
+                            // Animate dots with delay
+                            setTimeout(() => {
+                                dot.classList.add('visible');
+                            }, i * 100); // 100ms delay between each dot
+                        }
+                    }
+                }
+                if (pendingCountElement) {
+                    pendingCountElement.textContent = pendingSnapshot.size;
+                }
+
+                // Add loading state class removal
+                document.querySelectorAll('.stat-number').forEach(stat => {
+                    stat.classList.remove('loading');
+                });
+
+                // Update unread count in header
+                const headerUnreadCount = document.getElementById('header-unread-count');
+                if (headerUnreadCount) {
+                    headerUnreadCount.textContent = unreadSnapshot.size;
+                }
+
+                // Update website visits count
+                await updateVisitCount();
+
+                // Update notifications
+                await updateNotifications();
+
+                // Update submissions
+                await updateSubmissions();
+
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+                // Show error state
+                document.querySelectorAll('.stat-number').forEach(stat => {
+                    if (stat.textContent === '-') {
+                        stat.textContent = 'Error';
+                        stat.classList.add('error');
+                    }
+                });
+            }
+        }
+
+        async function updateVisitCount(timeFrame = 'today') {
+            try {
+                const visitCountElement = document.getElementById('visit-count');
+                if (visitCountElement) {
+                    visitCountElement.textContent = '-';
+                }
+
+                const visitsRef = collection(db, 'pageVisits');
+                let visitQuery;
+                const now = Timestamp.now();
+                let startDate;
+
+                // Calculate start date based on selected time frame
+                switch(timeFrame.toLowerCase()) {
+                    case 'today':
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        startDate = Timestamp.fromDate(today);
+                        break;
+                    case 'this week':
+                        const weekAgo = new Date();
+                        weekAgo.setDate(weekAgo.getDate() - 7);
+                        startDate = Timestamp.fromDate(weekAgo);
+                        break;
+                    case 'this month':
+                        const monthAgo = new Date();
+                        monthAgo.setMonth(monthAgo.getMonth() - 1);
+                        startDate = Timestamp.fromDate(monthAgo);
+                        break;
+                    default:
+                        const allTime = new Date(2024, 0, 1); // Start from January 2024
+                        startDate = Timestamp.fromDate(allTime);
+                }
+
+                visitQuery = query(
+                    visitsRef,
+                    where('timestamp', '>=', startDate),
+                    orderBy('timestamp', 'desc')
+                );
+
+                const snapshot = await getDocs(visitQuery);
+                let visitCount = snapshot.size;
+
+                // Add 1 to include the current visit
+                visitCount += 1;
+
+                // Format the number with commas
+                const formattedCount = visitCount.toLocaleString();
+                
+                // Update the display
+                if (visitCountElement) {
+                    visitCountElement.textContent = formattedCount;
+                }
+
+            } catch (error) {
+                console.error('Error fetching visit count:', error);
+                const visitCountElement = document.getElementById('visit-count');
+                if (visitCountElement) {
+                    visitCountElement.textContent = 'Error';
+                }
+            }
+        }
+
+        // Helper function to format time
+        function formatTime(timestamp) {
+            const now = new Date();
+            let notificationTime;
+            
+            if (timestamp instanceof Date) {
+                notificationTime = timestamp;
+            } else if (timestamp?.toDate instanceof Function) {
+                notificationTime = timestamp.toDate();
+            } else if (timestamp?.seconds) {
+                notificationTime = new Date(timestamp.seconds * 1000);
+            } else if (typeof timestamp === 'string') {
+                notificationTime = new Date(timestamp);
+            } else {
+                return 'Unknown time';
+            }
+
+            const diffInMinutes = Math.floor((now - notificationTime) / (1000 * 60));
+
+            if (diffInMinutes < 1) return 'Just now';
+            if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+            if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`;
+            return `${Math.floor(diffInMinutes / 1440)} days ago`;
+        }
+
+        async function updateNotifications() {
+            try {
+                const notificationsRef = collection(db, 'notifications');
+                
+                // Get unread count
+                const unreadQuery = query(notificationsRef, where('read', '==', false));
+                const unreadSnapshot = await getDocs(unreadQuery);
+                const unreadCount = unreadSnapshot.size;
+
+                // Get most recent notification
+                const recentQuery = query(
+                    notificationsRef,
+                    orderBy('timestamp', 'desc'),
+                    limit(1)
+                );
+                const recentSnapshot = await getDocs(recentQuery);
+                
+                // Update notification count and label
+                const notificationLabel = document.querySelector('.notifications-card .stats-label');
+                if (notificationLabel) {
+                    notificationLabel.innerHTML = `
+                        <span class="notification-count">${unreadCount}</span> unread notification${unreadCount !== 1 ? 's' : ''}
+                        <span class="notification-dot" style="display: ${unreadCount > 0 ? 'inline-block' : 'none'}"></span>
+                    `;
+                }
+
+                // Update notification content
+                const notificationTitleElement = document.querySelector('.notifications-card .stats-value');
+                const notificationMessageElement = document.querySelector('.notifications-card .notification-message');
+                
+                if (!recentSnapshot.empty) {
+                    const recentNotification = recentSnapshot.docs[0].data();
+                    
+                    if (notificationTitleElement) {
+                        notificationTitleElement.textContent = getNotificationTitle(recentNotification.type);
+                    }
+                    
+                    if (notificationMessageElement) {
+                        const formattedTime = formatTime(recentNotification.timestamp);
+                        notificationMessageElement.innerHTML = `
+                            ${recentNotification.message || ''}
+                            <div style="color: #999; font-size: 0.8rem; margin-top: 0.5rem;">
+                                ${formattedTime}
+                            </div>
+                        `;
+                    }
+                } else {
+                    if (notificationTitleElement) {
+                        notificationTitleElement.textContent = 'No notifications';
+                    }
+                    if (notificationMessageElement) {
+                        notificationMessageElement.textContent = 'You have no notifications at this time.';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error updating notifications:', error);
+                const notificationElements = document.querySelectorAll('.notifications-card .stats-value, .notifications-card .notification-message');
+                notificationElements.forEach(el => {
+                    el.textContent = 'Error loading notifications';
+                });
+            }
+        }
+
+        // Helper function to get notification title
+        function getNotificationTitle(type) {
+            switch (type) {
+                case 'submission_received':
+                    return 'New Submission';
+                case 'submission_approved':
+                    return 'Submission Approved';
+                case 'submission_rejected':
+                    return 'Submission Rejected';
+                case 'change_submitted':
+                    return 'Page Changes Submitted';
+                case 'change_approved':
+                    return 'Changes Approved';
+                case 'change_rejected':
+                    return 'Changes Rejected';
+                case 'artist_deleted':
+                    return 'Artist Page Deleted';
+                case 'progress_update':
+                    return 'Progress Update';
+                default:
+                    return 'Notification';
+            }
+        }
+
+        async function updateSubmissions() {
+            try {
+                const submissionsRef = collection(db, 'submissions');
+                
+                // Get all submissions first
+                const submissionsQuery = query(
+                    submissionsRef,
+                    orderBy('timestamp', 'desc')
+                );
+                const submissionsSnapshot = await getDocs(submissionsQuery);
+                
+                // Filter pending submissions in memory
+                const pendingSubmissions = submissionsSnapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }))
+                    .filter(submission => 
+                        // Check for both 'pending' and 'PENDING' status, or if status is not set
+                        submission.status?.toLowerCase() === 'pending' || 
+                        !submission.status
+                    )
+                    .slice(0, 10); // Only take the 10 most recent
+
+                console.log('All submissions:', submissionsSnapshot.docs.map(doc => doc.data().status));
+                console.log('Pending submissions:', pendingSubmissions);
+                
+                // Update submissions count
+                const submissionsCount = document.querySelector('.submissions-count');
+                if (submissionsCount) {
+                    submissionsCount.textContent = pendingSubmissions.length;
+                }
+
+                // Update header unread count
+                const headerUnreadCount = document.getElementById('header-unread-count');
+                if (headerUnreadCount) {
+                    headerUnreadCount.textContent = pendingSubmissions.length;
+                }
+
+                // Update submissions list
+                const submissionsList = document.getElementById('submissions-list');
+                if (submissionsList && pendingSubmissions.length > 0) {
+                    let submissionsHTML = '';
+                    
+                    pendingSubmissions.forEach(submission => {
+                        const timestamp = submission.timestamp?.toDate ? submission.timestamp.toDate() : new Date();
+                        const formattedTime = formatTime(timestamp);
+                        
+                        // Calculate days since submission
+                        const now = new Date();
+                        const daysSinceSubmission = Math.floor((now - timestamp) / (1000 * 60 * 60 * 24));
+                        
+                        // Set priority based on submission age
+                        let priority;
+                        if (daysSinceSubmission < 2) {
+                            priority = 'low';
+                        } else if (daysSinceSubmission < 4) {
+                            priority = 'medium';
+                        } else {
+                            priority = 'high';
+                        }
+                        
+                        submissionsHTML += `
+                            <tr>
+                                <td><input type="checkbox" data-id="${submission.id}"></td>
+                                <td>
+                                    <div class="submission-name">${submission.name || 'Unnamed Submission'}</div>
+                                    <div class="submission-attachments">${submission.attachments || 0} attachments</div>
+                                </td>
+                                <td>
+                                    <span class="priority-${priority}">${
+                                        priority.charAt(0).toUpperCase() + priority.slice(1)
+                                    }</span>
+                                </td>
+                                <td>${submission.category ? submission.category.split('-').map(word => 
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ') : 'Other'}</td>
+                                <td>${formattedTime}</td>
+                                <td>
+                                    <span class="submission-status status-pending">Pending</span>
+                                </td>
+                                <td>
+                                    <i class="fas fa-chevron-right" style="color: #666;"></i>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    submissionsList.innerHTML = submissionsHTML;
+
+                    // Add click handlers for checkboxes
+                    const checkboxes = submissionsList.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', updateSelectedCount);
+                    });
+                } else if (submissionsList) {
+                    submissionsList.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2rem;">
+                                No pending submissions found
+                            </td>
+                        </tr>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Error updating submissions:', error);
+                const submissionsList = document.getElementById('submissions-list');
+                if (submissionsList) {
+                    submissionsList.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2rem; color: #ff3b30;">
+                                Error loading submissions
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+        }
+
+        function updateSelectedCount() {
+            const selectedCount = document.querySelectorAll('#submissions-list input[type="checkbox"]:checked').length;
+            const selectedTag = document.querySelector('.filter-tag');
+            if (selectedTag) {
+                selectedTag.textContent = `${selectedCount} selected`;
+            }
+        }
+
+        // Set up time period selector
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            
+            // Add event listener for time period changes
+            const timeSelector = document.querySelector('.time-selector');
+            if (timeSelector) {
+                timeSelector.addEventListener('change', (e) => {
+                    updateVisitCount(e.target.value);
+                });
+            }
+        });
+
+        async function updateArtistPages() {
+            try {
+                // Get all submissions first, then filter in memory
+                const submissionsRef = collection(db, 'submissions');
+                const submissionsSnapshot = await getDocs(submissionsRef);
+                
+                // Create a map to store unique artists and their latest submission
+                const artistsMap = new Map();
+                
+                submissionsSnapshot.forEach(doc => {
+                    const submission = doc.data();
+                    // Only process approved submissions
+                    if (submission.status === 'approved') {
+                        const artistName = submission.name;
+                        
+                        // Only update the map if this is the first time we see this artist
+                        // or if this submission is more recent
+                        if (!artistsMap.has(artistName) || 
+                            submission.timestamp > artistsMap.get(artistName).timestamp) {
+                            artistsMap.set(artistName, submission);
+                        }
+                    }
+                });
+
+                // Convert map to array and sort by timestamp
+                const artists = Array.from(artistsMap.values())
+                    .sort((a, b) => b.timestamp - a.timestamp)
+                    .slice(0, 5); // Get only the 5 most recent
+
+                const artistList = document.getElementById('artist-list');
+                const activeArtistCount = document.getElementById('active-artist-count');
+                
+                if (artistList && artists.length > 0) {
+                    let artistsHTML = '';
+                    
+                    artists.forEach(artist => {
+                        const lastUpdated = formatTime(artist.timestamp);
+                        
+                        artistsHTML += `
+                            <tr>
+                                <td>
+                                    <div class="artist-name">
+                                        ${artist.name || 'Unnamed Artist'}
+                                    </div>
+                                </td>
+                                <td>${artist.category ? artist.category.split('-').map(word => 
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ') : 'Other'}</td>
+                                <td>${lastUpdated}</td>
+                                <td>
+                                    <i class="fas fa-chevron-right" style="color: #666;"></i>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    artistList.innerHTML = artistsHTML;
+                    if (activeArtistCount) {
+                        activeArtistCount.textContent = artistsMap.size;
+                    }
+                } else if (artistList) {
+                    artistList.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem;">
+                                No artist pages found
+                            </td>
+                        </tr>
+                    `;
+                    if (activeArtistCount) {
+                        activeArtistCount.textContent = '0';
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating artist pages:', error);
+                const artistList = document.getElementById('artist-list');
+                if (artistList) {
+                    artistList.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: #ff3b30;">
+                                Error loading artist pages
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+        }
+
+        async function updateArtistChanges() {
+            try {
+                const changesRef = collection(db, 'pendingChanges');
+                const changesSnapshot = await getDocs(changesRef);
+                
+                // Filter for pending changes
+                const pendingChanges = changesSnapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }))
+                    .filter(change => change.status === 'pending')
+                    .sort((a, b) => b.timestamp - a.timestamp)
+                    .slice(0, 5); // Get only the 5 most recent
+
+                const changesList = document.getElementById('changes-list');
+                const changesCount = document.getElementById('pending-changes-count');
+                
+                if (changesList && pendingChanges.length > 0) {
+                    let changesHTML = '';
+                    
+                    pendingChanges.forEach(change => {
+                        const submittedTime = formatTime(change.timestamp);
+                        
+                        changesHTML += `
+                            <tr>
+                                <td>
+                                    <div class="artist-name">
+                                        ${change.artistName || 'Unknown Artist'}
+                                    </div>
+                                </td>
+                                <td>${submittedTime}</td>
+                                <td>
+                                    <i class="fas fa-chevron-right" style="color: #666;"></i>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    changesList.innerHTML = changesHTML;
+                    if (changesCount) {
+                        changesCount.textContent = pendingChanges.length;
+                    }
+                } else if (changesList) {
+                    changesList.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem;">
+                                No pending changes found
+                            </td>
+                        </tr>
+                    `;
+                    if (changesCount) {
+                        changesCount.textContent = '0';
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating artist changes:', error);
+                const changesList = document.getElementById('changes-list');
+                if (changesList) {
+                    changesList.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: #ff3b30;">
+                                Error loading changes
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+        }
+
+        // Add to your existing DOMContentLoaded event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            updateArtistPages();
+            updateArtistChanges();
+        });
+    </script>
 </head>
 <body>
     <nav class="navbar">
@@ -136,9 +1588,193 @@
     </nav>
 
     <main class="dashboard-container">
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">Submission Dashboard</h1>
-            <p class="dashboard-subtitle">Choose how you'd like to view and manage submissions</p>
+        <div class="welcome-section">
+            <h1 class="welcome-title">Welcome,<br><span class="welcome-name">James</span></h1>
+        </div>
+
+        <div class="header-section">
+            <div class="unread-section">
+                <div class="unread-count-container">
+                    <div class="unread-count" id="header-unread-count">3</div>
+                </div>
+                <div class="unread-label">Pending<br>Submissions</div>
+            </div>
+            <a href="admin-messages.html" class="show-submissions-btn">Show Submissions</a>
+        </div>
+
+        <div class="stats-cards-container">
+            <div class="stats-card visitors-card">
+                <div class="stats-card-header">
+                    <div class="view-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="time-selector-wrapper">
+                        <select class="time-selector">
+                            <option>Today</option>
+                            <option>This Week</option>
+                            <option>This Month</option>
+                            <option>All Time</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stats-label">Total Website Visits</div>
+                <div class="stats-value" id="visit-count">-</div>
+            </div>
+
+            <div class="stats-card notifications-card">
+                <div class="stats-card-header">
+                    <div class="view-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="time-selector-wrapper">
+                        <select class="time-selector">
+                            <option>All</option>
+                            <option>Unread</option>
+                            <option>Read</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stats-label">
+                    <span class="notification-count">-</span> unread notifications<span class="notification-dot"></span>
+                </div>
+                <div class="stats-value">Loading...</div>
+                <div class="notification-message" style="color: #666; font-size: 0.9rem;">Loading notification...</div>
+            </div>
+
+            <div class="stats-card submissions-card">
+                <div class="submissions-header">
+                    <div>
+                        <div class="submissions-title">
+                            <h2 class="stats-value">Submission Review</h2>
+                            <span class="submissions-count">0</span>
+                        </div>
+                        <div class="submissions-subtitle">Review and manage pending creative submissions awaiting approval.</div>
+                    </div>
+                    <div class="submissions-actions">
+                        <div class="submissions-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search in Submission Review...">
+                        </div>
+                        <button class="action-button reject">Reject</button>
+                        <button class="action-button approve">Approve</button>
+                    </div>
+                </div>
+
+                <div class="submissions-filters">
+                    <div class="filter-tag active">
+                        0 selected
+                    </div>
+                    <div class="filter-tag">
+                        This Week
+                        <span class="close">×</span>
+                    </div>
+                </div>
+
+                <table class="submissions-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;"><input type="checkbox"></th>
+                            <th>Name</th>
+                            <th>Priority</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissions-list">
+                        <!-- Submissions will be populated here -->
+                    </tbody>
+                </table>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <a href="admin-messages.html" class="show-submissions-btn" style="margin: 0;">View All Submissions</a>
+                </div>
+            </div>
+
+            <div class="stats-card artist-pages-card">
+                <div class="stats-card-header">
+                    <div>
+                        <div class="stats-title">
+                            <h2 class="stats-value">Artist Pages</h2>
+                            <span class="artist-count" id="active-artist-count">0</span>
+                        </div>
+                        <div class="stats-subtitle">Manage and review artist profiles and their published works.</div>
+                    </div>
+                    <div class="artist-actions">
+                        <div class="artist-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search artists...">
+                        </div>
+                    </div>
+                </div>
+
+                <table class="artist-table">
+                    <thead>
+                        <tr>
+                            <th>Artist</th>
+                            <th>Category</th>
+                            <th>Artist Added</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="artist-list">
+                        <!-- Artists will be populated here -->
+                    </tbody>
+                </table>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <a href="admin-artists.html" class="show-submissions-btn" style="margin: 0;">View All Artists</a>
+                </div>
+            </div>
+
+            <div class="stats-card artist-changes-card">
+                <div class="stats-card-header">
+                    <div>
+                        <div class="stats-title">
+                            <h2 class="stats-value">Artist Changes</h2>
+                            <span class="changes-count" id="pending-changes-count">0</span>
+                        </div>
+                        <div class="stats-subtitle">Review pending changes to artist pages.</div>
+                    </div>
+                    <div class="changes-actions">
+                        <div class="changes-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search changes...">
+                        </div>
+                    </div>
+                </div>
+
+                <table class="changes-table">
+                    <thead>
+                        <tr>
+                            <th>Artist</th>
+                            <th>Submitted</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="changes-list">
+                        <!-- Changes will be populated here -->
+                    </tbody>
+                </table>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <a href="artist-changes.html" class="show-submissions-btn" style="margin: 0;">View All Changes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number loading" id="unread-count">-</div>
+                <div class="stat-label">Unread Submissions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number loading" id="creatives-count">-</div>
+                <div class="dots-container" id="artists-dots"></div>
+                <div class="stat-label">Total Creatives</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number loading" id="pending-count">-</div>
+                <div class="stat-label">Pending Changes</div>
+            </div>
         </div>
 
         <div class="options-grid">

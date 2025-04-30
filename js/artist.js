@@ -14,11 +14,21 @@ const emptyState = document.getElementById('empty-state');
 const editBtn = document.getElementById('edit-btn');
 const saveBtn = document.getElementById('save-btn');
 const addSectionBtn = document.getElementById('add-section-btn');
+addSectionBtn.textContent = 'Add Works';
 const editControls = document.querySelector('.edit-controls');
 const submissionsBtn = document.getElementById('submissions-btn');
 const submissionsPopover = document.querySelector('.submissions-popover');
 const submissionsList = document.querySelector('.submissions-list');
 const closePopover = document.querySelector('.close-popover');
+
+// Create add shop button
+const addShopBtn = document.createElement('button');
+addShopBtn.id = 'add-shop-btn';
+addShopBtn.className = 'add-section-btn';
+addShopBtn.style.display = 'none';
+addShopBtn.textContent = 'Add Shop';
+// Insert add shop button after add section button
+addSectionBtn.parentNode.insertBefore(addShopBtn, addSectionBtn.nextSibling);
 
 // State
 let isEditing = false;
@@ -76,6 +86,9 @@ function setupEventListeners() {
             currentArtist = JSON.parse(JSON.stringify(window.originalArtistData));
             toggleEditMode(false);
             
+            // Re-setup feature image to reflect original state
+            setupFeatureImageUpload();
+            
             // Show message
             const message = document.createElement('div');
             message.className = 'pending-message';
@@ -86,6 +99,52 @@ function setupEventListeners() {
     });
 
     addSectionBtn.addEventListener('click', addNewSection);
+    
+    // Add event listener for add shop button
+    addShopBtn.addEventListener('click', () => {
+        const hasShop = currentArtist.sections.some(section => section.type === 'shop');
+        
+        if (hasShop) {
+            // Remove shop functionality
+            if (confirm('Are you sure you want to remove the shop section? This will delete all products.')) {
+                const shopIndex = currentArtist.sections.findIndex(section => section.type === 'shop');
+                if (shopIndex !== -1) {
+                    currentArtist.sections.splice(shopIndex, 1);
+                    addShopBtn.textContent = 'Add Shop';
+                    displayContent(currentArtist);
+                    document.body.classList.add('editing');
+                }
+            }
+        } else {
+            // Add shop functionality
+            const shopSection = {
+                type: 'shop',
+                title: 'Shop',
+                description: 'Browse and purchase my work',
+                products: []
+            };
+            currentArtist.sections.push(shopSection);
+            const newShopIndex = currentArtist.sections.length - 1;
+            addShopBtn.textContent = 'Remove Shop';
+            displayContent(currentArtist);
+            document.body.classList.add('editing');
+
+            // Scroll to the newly added shop section
+            setTimeout(() => {
+                const shopElement = document.querySelector(`.section[data-index="${newShopIndex}"]`);
+                if (shopElement) {
+                    shopElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Flash effect to highlight the new section
+                    shopElement.style.transition = 'background-color 0.5s';
+                    shopElement.style.backgroundColor = '#f0f0f0';
+                    setTimeout(() => {
+                        shopElement.style.backgroundColor = '#eeeeee';
+                    }, 1000);
+                }
+            }, 100);
+        }
+    });
     
     // Delegate event listeners for dynamic elements
     sectionsContainer.addEventListener('change', handleFileSelect);
@@ -120,8 +179,14 @@ function handleSectionControls(event) {
     if (event.target.matches('.delete-section-btn')) {
         const section = event.target.closest('.section');
         const index = parseInt(section.dataset.index);
+        const sectionType = section.dataset.type;
         
-        if (confirm('Are you sure you want to delete this section?')) {
+        let confirmMessage = 'Are you sure you want to delete this section?';
+        if (sectionType === 'shop') {
+            confirmMessage = 'Are you sure you want to delete the shop section? This will remove all products.';
+        }
+        
+        if (confirm(confirmMessage)) {
             currentArtist.sections.splice(index, 1);
             displayContent(currentArtist);
             document.body.classList.add('editing');
@@ -385,19 +450,6 @@ async function loadArtistContent() {
                 });
             }
 
-            // Add shop section for Painters
-            if (category === 'painter' && !currentArtist.sections.some(section => section.type === 'shop')) {
-                // Find the services section index
-                const servicesIndex = currentArtist.sections.findIndex(section => section.type === 'services');
-                // Add shop section after services
-                currentArtist.sections.splice(servicesIndex + 1, 0, {
-                    type: 'shop',
-                    title: 'Shop',
-                    description: 'Browse and purchase my paintings',
-                    products: []
-                });
-            }
-
             displayContent(currentArtist);
         } else {
             // Show empty state with create button
@@ -416,16 +468,6 @@ async function loadArtistContent() {
                     services: []
                 }]
             };
-
-            // Add shop section for Painters in new artist pages
-            if (category === 'painter') {
-                currentArtist.sections.push({
-                    type: 'shop',
-                    title: 'Shop',
-                    description: 'Browse and purchase my paintings',
-                    products: []
-                });
-            }
         }
     } catch (error) {
         console.error('Error loading artist content:', error);
@@ -469,6 +511,7 @@ function displayContent(artist) {
                     <div class="section-header">
                         <h2 class="section-title" contenteditable="${section.type !== 'services' && section.type !== 'shop' && isEditing}" spellcheck="false" 
                             data-placeholder="New Section">${sectionTitle}</h2>
+                        ${section.type === 'shop' && isEditing ? `<button class="delete-section-btn delete-shop-btn">Delete Shop</button>` : ''}
                     </div>
                     <div class="section-details ${isCollapsedView ? 'hidden' : ''}">
                         ${section.type === 'services' ? `
@@ -777,6 +820,90 @@ function displayContent(artist) {
         .feature-image-upload-btn:hover {
             background: #333 !important;
         }
+
+        .feature-image-upload-area {
+            width: 100%;
+            height: 300px;
+            border: 2px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #eeeeee !important;
+            transition: border-color 0.3s;
+        }
+
+        .feature-image-upload-area:hover {
+            border-color: #999;
+        }
+
+        .feature-image-upload-content {
+            text-align: center;
+            color: #666;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #999;
+        }
+
+        .feature-image-upload-content h3 {
+            font-size: 1.5rem;
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+
+        .feature-image-upload-content p {
+            margin: 0;
+            color: #666;
+        }
+
+        .feature-image-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(238, 238, 238, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ddd;
+            border-top: 3px solid #333;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-content p {
+            margin: 0;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        body:not(.editing) .feature-image-upload-area {
+            cursor: default;
+        }
+
+        body:not(.editing) .feature-image-upload-area:hover {
+            border-color: #ddd;
+        }
     `;
     document.head.appendChild(featureImageStyle);
 
@@ -828,16 +955,16 @@ function displayContent(artist) {
         .add-product-card {
             border: 2px dashed #ddd;
             background: #eeeeee !important;
+            display: flex;
+            flex-direction: column;
         }
 
         .image-upload-area {
             position: relative;
             height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             background: #eeeeee !important;
             cursor: pointer;
+            overflow: hidden;
         }
 
         .product-image-input {
@@ -846,12 +973,29 @@ function displayContent(artist) {
             height: 100%;
             opacity: 0;
             cursor: pointer;
+            z-index: 2;
         }
 
         .upload-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
             color: #666;
             background: #eeeeee !important;
+            z-index: 1;
+        }
+
+        .upload-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .upload-placeholder span {
@@ -867,6 +1011,8 @@ function displayContent(artist) {
             flex-direction: column;
             gap: 0.5rem;
             background: #eeeeee !important;
+            position: relative;
+            z-index: 2;
         }
 
         .product-title-input,
@@ -925,6 +1071,34 @@ function displayContent(artist) {
         }
     `;
     document.head.appendChild(shopStyles);
+
+    // Add styles for the delete shop button
+    const shopDeleteStyle = document.createElement('style');
+    shopDeleteStyle.textContent = `
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background: #eeeeee !important;
+        }
+
+        .delete-shop-btn {
+            background: #ff4444 !important;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        .delete-shop-btn:hover {
+            background: #ff6666 !important;
+        }
+    `;
+    document.head.appendChild(shopDeleteStyle);
 }
 
 // Set up drag and drop functionality
@@ -1186,6 +1360,7 @@ function startEditing() {
     saveBtn.style.display = 'block';
     cancelBtn.style.display = 'block';
     addSectionBtn.style.display = 'block';
+    addShopBtn.style.display = 'block';
 
     // Setup feature image upload
     setupFeatureImageUpload();
@@ -1238,14 +1413,32 @@ function addNewSection() {
 
     // Add the new section before the services section
     const servicesIndex = currentArtist.sections.findIndex(section => section.type === 'services');
+    let newSectionIndex;
     if (servicesIndex >= 0) {
         currentArtist.sections.splice(servicesIndex, 0, newSection);
+        newSectionIndex = servicesIndex;
     } else {
         currentArtist.sections.push(newSection);
+        newSectionIndex = currentArtist.sections.length - 1;
     }
     
     displayContent(currentArtist);
     document.body.classList.add('editing');
+
+    // Scroll to the newly added section
+    setTimeout(() => {
+        const newSectionElement = document.querySelector(`.section[data-index="${newSectionIndex}"]`);
+        if (newSectionElement) {
+            newSectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Flash effect to highlight the new section
+            newSectionElement.style.transition = 'background-color 0.5s';
+            newSectionElement.style.backgroundColor = '#f0f0f0';
+            setTimeout(() => {
+                newSectionElement.style.backgroundColor = '#eeeeee';
+            }, 1000);
+        }
+    }, 100);
 }
 
 // Save changes
@@ -1461,6 +1654,11 @@ function toggleEditMode(isEnabled) {
     cancelBtn.style.display = isEnabled ? 'block' : 'none';
     addSectionBtn.style.display = isEnabled ? 'block' : 'none';
     
+    // Update add/remove shop button
+    const hasShop = currentArtist.sections.some(section => section.type === 'shop');
+    addShopBtn.textContent = hasShop ? 'Remove Shop' : 'Add Shop';
+    addShopBtn.style.display = isEnabled ? 'block' : 'none';
+    
     // Handle view toggle visibility
     const viewToggle = document.querySelector('.view-toggle');
     if (viewToggle) {
@@ -1469,13 +1667,14 @@ function toggleEditMode(isEnabled) {
     
     isCollapsedView = false;
 
-    // Always remove any existing upload buttons first
-    const existingUploadButtons = document.querySelectorAll('.feature-image-upload-btn');
-    existingUploadButtons.forEach(button => button.remove());
-
-    // If entering edit mode, create a new upload button
-    if (isEnabled) {
+    // Handle feature image upload button visibility
+    const uploadButton = document.querySelector('.feature-image-upload-btn');
+    if (!uploadButton && isEnabled) {
+        // Only create the button if it doesn't exist and we're entering edit mode
         setupFeatureImageUpload();
+    } else if (uploadButton) {
+        // If button exists, just toggle its visibility
+        uploadButton.style.display = isEnabled ? 'block' : 'none';
     }
 
     // When exiting edit mode, check if we need to show empty state
@@ -1499,16 +1698,8 @@ function setupFeatureImageUpload() {
     const featureImageContainer = document.querySelector('.feature-image-container');
     if (!featureImageContainer) return;
 
-    // Create upload button
-    const uploadButton = document.createElement('button');
-    uploadButton.className = 'feature-image-upload-btn';
-    uploadButton.textContent = 'Upload Feature Image';
-    featureImageContainer.appendChild(uploadButton);
-
-    // Hide button if not in edit mode
-    if (!document.body.classList.contains('editing')) {
-        uploadButton.style.display = 'none';
-    }
+    // Clear existing content
+    featureImageContainer.innerHTML = '';
 
     // Create file input
     const fileInput = document.createElement('input');
@@ -1517,43 +1708,209 @@ function setupFeatureImageUpload() {
     fileInput.style.display = 'none';
     featureImageContainer.appendChild(fileInput);
 
+    if (currentArtist && currentArtist.featureImage) {
+        // If we have an existing image, show it with an overlay button
+        const existingImage = document.createElement('img');
+        existingImage.className = 'feature-image';
+        existingImage.src = currentArtist.featureImage;
+        existingImage.alt = `${artistName}'s feature image`;
+        featureImageContainer.appendChild(existingImage);
+
+        // Create upload button as an overlay only in edit mode
+        if (document.body.classList.contains('editing')) {
+            const uploadButton = document.createElement('button');
+            uploadButton.className = 'feature-image-upload-btn';
+            uploadButton.textContent = 'Change Feature Image';
+            featureImageContainer.appendChild(uploadButton);
+
+            uploadButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+        }
+    } else if (document.body.classList.contains('editing')) {
+        // Only show upload area in edit mode
+        const uploadArea = document.createElement('div');
+        uploadArea.className = 'feature-image-upload-area';
+        
+        const uploadContent = document.createElement('div');
+        uploadContent.className = 'feature-image-upload-content';
+        uploadContent.innerHTML = `
+            <div class="upload-icon">+</div>
+            <h3>Add Feature Image</h3>
+            <p>Upload an image that represents your work</p>
+        `;
+        
+        uploadArea.appendChild(uploadContent);
+        featureImageContainer.appendChild(uploadArea);
+
+        // Make the entire area clickable
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+    }
+
     // Handle file selection
     fileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
         try {
+            // Create and show loading overlay
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'feature-image-loading-overlay';
+            loadingOverlay.innerHTML = `
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <p>Uploading image...</p>
+                </div>
+            `;
+            featureImageContainer.appendChild(loadingOverlay);
+
             // Upload to Firebase Storage
             const storageRef = ref(storage, `artist-pages/${artistName}/feature-image/${Date.now()}-${file.name}`);
             const snapshot = await uploadBytes(storageRef, file);
             const url = await getDownloadURL(snapshot.ref);
 
-            // Update the feature image display
-            const existingImage = featureImageContainer.querySelector('.feature-image');
-            if (existingImage) {
-                existingImage.src = url;
-            } else {
-                const newImage = document.createElement('img');
-                newImage.className = 'feature-image';
-                newImage.src = url;
-                newImage.alt = `${artistName}'s feature image`;
-                featureImageContainer.insertBefore(newImage, uploadButton);
-            }
-
             // Update currentArtist with new feature image URL
             currentArtist.featureImage = url;
+            
+            // Refresh the feature image display
+            setupFeatureImageUpload();
             document.body.classList.add('editing');
         } catch (error) {
             console.error('Error uploading feature image:', error);
             alert('Error uploading image. Please try again.');
+            // Remove loading overlay in case of error
+            const loadingOverlay = featureImageContainer.querySelector('.feature-image-loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
         }
     });
-
-    // Handle upload button click
-    uploadButton.addEventListener('click', () => {
-        fileInput.click();
-    });
 }
+
+// Add styles for feature image
+const featureImageStyle = document.createElement('style');
+featureImageStyle.textContent = `
+    .feature-image-container {
+        width: 100%;
+        margin: 0.5rem 0;
+        position: relative;
+        background: #eeeeee !important;
+    }
+
+    .feature-image {
+        width: 100%;
+        height: auto;
+        max-height: 900px;
+        object-fit: cover;
+        display: block;
+        background: #eeeeee !important;
+    }
+
+    .feature-image-upload-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        background: #000 !important;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        z-index: 1;
+    }
+
+    .feature-image-upload-btn:hover {
+        background: #333 !important;
+    }
+
+    .feature-image-upload-area {
+        width: 100%;
+        height: 300px;
+        border: 2px dashed #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #eeeeee !important;
+        transition: border-color 0.3s;
+    }
+
+    .feature-image-upload-area:hover {
+        border-color: #999;
+    }
+
+    .feature-image-upload-content {
+        text-align: center;
+        color: #666;
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #999;
+    }
+
+    .feature-image-upload-content h3 {
+        font-size: 1.5rem;
+        margin: 0 0 0.5rem 0;
+        color: #333;
+    }
+
+    .feature-image-upload-content p {
+        margin: 0;
+        color: #666;
+    }
+
+    .feature-image-loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(238, 238, 238, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+
+    .loading-content {
+        text-align: center;
+    }
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #ddd;
+        border-top: 3px solid #333;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        animation: spin 1s linear infinite;
+    }
+
+    .loading-content p {
+        margin: 0;
+        color: #333;
+        font-size: 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    body:not(.editing) .feature-image-upload-area {
+        cursor: default;
+    }
+
+    body:not(.editing) .feature-image-upload-area:hover {
+        border-color: #ddd;
+    }
+`;
+document.head.appendChild(featureImageStyle);
 
 // Add these new functions for handling shop products
 async function handleProductImageSelect(event) {
@@ -1662,7 +2019,6 @@ function setupSubmissionsPopover() {
 async function loadSubmissions() {
     try {
         const changesRef = collection(db, 'pendingChanges');
-        // Simplified query that doesn't require composite index
         const q = query(
             changesRef,
             where('artistName', '==', artistName)

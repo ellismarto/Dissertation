@@ -51,66 +51,67 @@ previewStyle.textContent = `
     .preview-content {
         position: relative;
         width: 90%;
-        max-width: 1200px;
+        max-width: 2200px;
         max-height: 90vh;
         margin: 2rem auto;
         background: #eeeeee;
-        padding: 3rem 2rem 2rem;
+        padding: 2rem 0;
         overflow-y: auto;
-        border-radius: 4px;
     }
 
     .preview-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
         margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #eee;
+        text-align: left;
         position: relative;
+        padding-top: 6rem;
+        background: #eeeeee !important;
     }
 
     .preview-title {
-        font-size: 8rem;
+        font-size: 7rem;
         font-weight: 500;
+        margin-bottom: 0;
+        padding-left: 0.6rem;
         letter-spacing: -0.05em;
-        text-transform: uppercase;
-        line-height: 0.8;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        margin: 0;
+        line-height: 0.6;
+        font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         position: relative;
-        padding-bottom: 7rem;
+        background: #eeeeee !important;
     }
 
-    .preview-title::after {
-        content: attr(data-last-name);
-        position: absolute;
-        left: 8rem;
-        top: 7rem;
-        white-space: nowrap;
-        font-weight: 500;
+    .artist-category {
+        font-size: 2.2rem;
+        color: #666;
+        padding-left: 0.9rem;
+        display: inline-block;
+        font-weight: 400;
         letter-spacing: -0.05em;
-        line-height: 0.8;
+        background: #eeeeee !important;
+        font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    .preview-title span {
-        visibility: hidden;
+    .artist-header-container {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 0;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-top: 2rem;
+        background: #eeeeee !important;
     }
 
     .version-floating-title {
         position: absolute;
-        top: -1.5rem;
+        top: 2rem;
         right: 2rem;
         color: white;
         padding: 0.5rem 1rem;
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 400;
         letter-spacing: -0.02em;
-        text-transform: none;
         border-radius: 4px;
         z-index: 1;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transform: translateY(-50%);
     }
 
     .version-floating-title.previous {
@@ -122,17 +123,20 @@ previewStyle.textContent = `
     }
 
     .close-preview {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
         background: none;
         border: none;
         font-size: 1.5rem;
         cursor: pointer;
         padding: 0.5rem;
         color: #666;
+        z-index: 2;
     }
 
     .preview-sections {
-        display: grid;
-        gap: 3rem;
+        padding: 0 2rem;
     }
 
     .preview-section {
@@ -176,21 +180,25 @@ previewStyle.textContent = `
     @media (max-width: 768px) {
         .preview-title {
             font-size: 4rem;
-            padding-bottom: 4rem;
         }
-        .preview-title::after {
-            left: 4rem;
-            top: 3.5rem;
+        
+        .artist-category {
+            font-size: 1.8rem;
         }
+
         .preview-content {
             margin: 1rem;
-            padding: 1rem;
+            padding: 1rem 0;
         }
+
         .version-floating-title {
-            top: -1rem;
+            top: 1rem;
             right: 1rem;
-            font-size: 0.9rem;
-            padding: 0.5rem 1rem;
+        }
+
+        .close-preview {
+            top: 1rem;
+            right: 1rem;
         }
     }
 `;
@@ -198,31 +206,34 @@ document.head.appendChild(previewStyle);
 
 function showPreview(version, data, artistName) {
     const modal = document.getElementById('preview-modal');
-    const title = modal.querySelector('.preview-title');
-    const sections = modal.querySelector('.preview-sections');
-    const header = modal.querySelector('.preview-header');
+    const previewContent = modal.querySelector('.preview-content');
 
-    // Clear any existing version title
-    const existingVersionTitle = header.querySelector('.version-floating-title');
-    if (existingVersionTitle) {
-        existingVersionTitle.remove();
-    }
+    // Clear existing content
+    previewContent.innerHTML = `
+        <button class="close-preview">&times;</button>
+        <div class="preview-header">
+            <div class="artist-header-container">
+                <h2 class="preview-title">${artistName}</h2>
+                ${data.category ? `<div class="artist-category">${formatCategory(data.category)}</div>` : ''}
+            </div>
+        </div>
+        <div class="preview-sections"></div>
+    `;
 
-    // Format the artist name to show the skewed effect
-    const nameParts = artistName.split(' ');
-    const firstName = nameParts[0];
-    const remainingNames = nameParts.slice(1).join(' ');
-    title.textContent = firstName;
-    title.innerHTML += `<span> ${remainingNames}</span>`;
-    title.setAttribute('data-last-name', remainingNames);
-    
-    // Add floating version title
+    // Add version indicator
     const versionTitle = document.createElement('div');
     versionTitle.className = `version-floating-title ${version.toLowerCase()}`;
     versionTitle.textContent = `${version} version`;
-    header.appendChild(versionTitle);
+    previewContent.querySelector('.preview-header').appendChild(versionTitle);
+
+    // Setup close button
+    const closeBtn = previewContent.querySelector('.close-preview');
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
 
     // Add feature image if it exists
+    const previewSections = previewContent.querySelector('.preview-sections');
     let featureImageHtml = '';
     if (data.featureImage) {
         featureImageHtml = `
@@ -232,7 +243,7 @@ function showPreview(version, data, artistName) {
         `;
     }
     
-    sections.innerHTML = featureImageHtml + data.sections.map(section => {
+    previewSections.innerHTML = featureImageHtml + data.sections.map(section => {
         if (section.type === 'services') {
             return `
                 <div class="preview-section">
@@ -265,6 +276,14 @@ function showPreview(version, data, artistName) {
     }).join('');
 
     modal.classList.add('active');
+}
+
+// Helper function to format category name
+function formatCategory(category) {
+    return category
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 }
 
 async function loadPendingChanges() {
