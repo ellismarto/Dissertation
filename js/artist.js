@@ -38,6 +38,7 @@ let isCollapsedView = false;
 // Get artist name from URL parameter
 const urlParams = new URLSearchParams(window.location.search);
 const artistName = urlParams.get('name');
+const version = urlParams.get('version'); // Get version parameter
 
 // Create cancel button
 const cancelBtn = document.createElement('button');
@@ -59,12 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.title = `${artistName} - Sonder`;
     artistNameElement.textContent = artistName;
 
-    // Show edit controls for everyone
-    editControls.style.display = 'flex';
+    // Show edit controls only if not viewing a specific version
+    editControls.style.display = version ? 'none' : 'flex';
     
     // Store original artist data when first loading
     loadArtistContent().then(() => {
-        window.originalArtistData = JSON.parse(JSON.stringify(currentArtist));
+        if (!version) {
+            window.originalArtistData = JSON.parse(JSON.stringify(currentArtist));
+        }
     });
     
     setupEventListeners();
@@ -242,11 +245,8 @@ async function uploadImages(files, sectionIndex) {
 // Load artist content
 async function loadArtistContent() {
     try {
-        console.log('Loading artist content for:', artistName);
-        
         const artistRef = doc(db, 'artistPages', artistName);
         const artistDoc = await getDoc(artistRef);
-        console.log('Artist doc exists:', artistDoc.exists());
 
         // Get the category from submissions
         const submissionsRef = collection(db, 'submissions');
@@ -255,13 +255,11 @@ async function loadArtistContent() {
             where('status', '==', 'approved')
         );
         const submissionsSnapshot = await getDocs(q);
-        console.log('Submissions found:', submissionsSnapshot.size);
         
         let category = null;
         if (!submissionsSnapshot.empty) {
             const submission = submissionsSnapshot.docs[0].data();
             category = submission.category;
-            console.log('Found category:', category);
         }
 
         // Set the artist name directly without splitting
@@ -287,7 +285,6 @@ async function loadArtistContent() {
 
         // Add category display if it exists
         if (category) {
-            console.log('Adding category element');
             const categoryElement = document.createElement('div');
             categoryElement.className = 'artist-category';
             // Format the category name
@@ -296,9 +293,7 @@ async function loadArtistContent() {
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
             categoryElement.textContent = formattedCategory;
-            console.log('Category element created:', categoryElement);
             nameAndCategoryWrapper.appendChild(categoryElement);
-            console.log('Category element appended to name and category wrapper');
         }
 
         // Add "Go To Services" button to the row
@@ -319,158 +314,92 @@ async function loadArtistContent() {
         featureImageContainer.className = 'feature-image-container';
         headerContainer.appendChild(featureImageContainer);
 
-        // Add styles once at the start
-        const styles = document.createElement('style');
-        styles.textContent = `
-            .artist-header {
-                margin-bottom: 2rem;
-                text-align: left;
-                position: relative;
-                padding-top: 6rem;
-                background: #eeeeee !important;
-            }
-
-            .artist-name {
-                font-size: 7rem;
-                font-weight: 500;
-                margin-bottom: 0;
-                padding-left: 0.6rem;
-                letter-spacing: -0.05em;
-                line-height: 0.6;
-                font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                position: relative;
-                background: #eeeeee !important;
-            }
-
-            .artist-header-container {
-                display: flex;
-                flex-direction: column;
-                align-items: start;
-                gap: 0;
-                margin-bottom: 2rem;
-                position: relative;
-                padding-top: 2rem;
-                background: #eeeeee !important;
-                font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            }
-
-            .artist-category {
-                font-size: 2.2rem;
-                color: #666;
-                padding-left: 0.9rem;
-                display: inline-block;
-                font-weight: 400;
-                letter-spacing: -0.05em;
-                background: #eeeeee !important;
-                font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            }
-
-            .header-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                gap: 2rem;
-                width: 100%;
-                margin-bottom: 2rem;
-            }
-
-            .name-and-category-wrapper {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0;
-            }
-
-            .go-to-services-btn {
-                background: #000;
-                color: white;
-                border: none;
-                padding: 0.8rem 1.5rem;
-                font-size: 1.1rem;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                white-space: nowrap;
-                margin-top: 1.5rem;
-                flex-shrink: 0;
-            }
-
-            .go-to-services-btn:hover {
-                background: #333;
-            }
-
-            @media (max-width: 768px) {
-                .artist-name {
-                    font-size: 4rem;
-                }
-                
-                .artist-category {
-                    font-size: 1.8rem;
-                }
-
-                .header-row {
-                    flex-direction: column;
-                    gap: 1rem;
-                }
-
-                .go-to-services-btn {
-                    margin-top: 0;
-                    font-size: 1rem;
-                    padding: 0.6rem 1.2rem;
-                    width: 100%;
-                }
-            }
-        `;
-        document.head.appendChild(styles);
-
-        if (artistDoc.exists()) {
-            currentArtist = artistDoc.data();
-            console.log('Current artist data:', currentArtist);
+        if (version === 'previous') {
+            // Load from pendingChanges collection
+            const pendingChangesRef = collection(db, 'pendingChanges');
+            const q = query(pendingChangesRef, 
+                where('artistName', '==', artistName),
+                where('status', '==', 'pending'));
+            const snapshot = await getDocs(q);
             
-            // Display feature image if it exists
-            if (currentArtist.featureImage) {
-                const featureImage = document.createElement('img');
-                featureImage.className = 'feature-image';
-                featureImage.src = currentArtist.featureImage;
-                featureImage.alt = `${artistName}'s feature image`;
-                featureImageContainer.appendChild(featureImage);
+            if (!snapshot.empty) {
+                const change = snapshot.docs[0].data();
+                currentArtist = {
+                    name: artistName,
+                    sections: change.previousState.sections,
+                    featureImage: change.previousState.featureImage
+                };
+            } else {
+                // If no pending changes, show current version
+                if (artistDoc.exists()) {
+                    currentArtist = artistDoc.data();
+                } else {
+                    showEmptyState();
+                    return;
+                }
             }
+        } else if (version === 'new') {
+            // Load from pendingChanges collection
+            const pendingChangesRef = collection(db, 'pendingChanges');
+            const q = query(pendingChangesRef, 
+                where('artistName', '==', artistName),
+                where('status', '==', 'pending'));
+            const snapshot = await getDocs(q);
             
-            // Ensure sections array exists
-            if (!currentArtist.sections) {
-                currentArtist.sections = [];
+            if (!snapshot.empty) {
+                const change = snapshot.docs[0].data();
+                currentArtist = {
+                    name: artistName,
+                    sections: change.proposedState.sections,
+                    featureImage: change.proposedState.featureImage
+                };
+            } else {
+                // If no pending changes, show current version
+                if (artistDoc.exists()) {
+                    currentArtist = artistDoc.data();
+                } else {
+                    showEmptyState();
+                    return;
+                }
             }
-
-            // Ensure services section exists
-            if (!currentArtist.sections.some(section => section.type === 'services')) {
-                currentArtist.sections.push({
-                    type: 'services',
-                    title: 'Services',
-                    description: '',
-                    services: []
-                });
-            }
-
-            displayContent(currentArtist);
         } else {
-            // Show empty state with create button
-            emptyState.innerHTML = `
-                <h2>Start Creating Your Artist Page</h2>
-                <p>Add sections to showcase your work, tell your story, and share your creative journey.</p>
-            `;
-            emptyState.style.display = 'block';
-            sectionsContainer.style.display = 'none';
-            currentArtist = {
-                name: artistName,
-                sections: [{
-                    type: 'services',
-                    title: 'Services',
-                    description: '',
-                    services: []
-                }]
-            };
+            // Load current version
+            if (artistDoc.exists()) {
+                currentArtist = artistDoc.data();
+            } else {
+                showEmptyState();
+                return;
+            }
         }
+
+        // Display feature image if it exists
+        if (currentArtist.featureImage) {
+            const featureImage = document.createElement('img');
+            featureImage.className = 'feature-image';
+            featureImage.src = currentArtist.featureImage;
+            featureImage.alt = `${artistName}'s feature image`;
+            featureImageContainer.appendChild(featureImage);
+        }
+        
+        // Ensure sections array exists
+        if (!currentArtist.sections) {
+            currentArtist.sections = [];
+        }
+
+        // Ensure services section exists
+        if (!currentArtist.sections.some(section => section.type === 'services')) {
+            currentArtist.sections.push({
+                type: 'services',
+                title: 'Services',
+                description: '',
+                services: []
+            });
+        }
+
+        displayContent(currentArtist);
     } catch (error) {
         console.error('Error loading artist content:', error);
+        showEmptyState();
     }
 }
 

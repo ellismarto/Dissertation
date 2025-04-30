@@ -377,15 +377,18 @@ function createChangeCard(changeId, change) {
     // Add event listeners for buttons
     card.querySelector('.approve-btn').addEventListener('click', () => handleApprove(changeId, change));
     card.querySelector('.reject-btn').addEventListener('click', () => handleReject(changeId, change));
+    
+    // Update preview buttons to navigate to artist pages
     card.querySelector('.preview-previous').addEventListener('click', () => {
         if (change.previousState) {
-            showPreview('Previous', change.previousState, change.artistName);
+            window.location.href = `artist.html?name=${encodeURIComponent(change.artistName)}&version=previous`;
         } else {
             alert('No previous version available');
         }
     });
+    
     card.querySelector('.preview-new').addEventListener('click', () => {
-        showPreview('New', change.proposedState, change.artistName);
+        window.location.href = `artist.html?name=${encodeURIComponent(change.artistName)}&version=new`;
     });
 
     return card;
