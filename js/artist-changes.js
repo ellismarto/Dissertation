@@ -286,6 +286,45 @@ function formatCategory(category) {
         .join(' ');
 }
 
+// Helper function to format relative time
+function formatRelativeTime(timestamp) {
+    const now = new Date();
+    const date = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) {
+        return 'just now';
+    }
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+        return `${diffInMinutes} ${diffInMinutes === 1 ? 'min' : 'mins'} ago`;
+    }
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+        return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+    }
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+        return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+    }
+    
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    if (diffInWeeks < 4) {
+        return `${diffInWeeks} ${diffInWeeks === 1 ? 'week' : 'weeks'} ago`;
+    }
+    
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) {
+        return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`;
+    }
+    
+    const diffInYears = Math.floor(diffInDays / 365);
+    return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
+}
+
 async function loadPendingChanges() {
     const changesList = document.getElementById('changes-list');
     
@@ -315,13 +354,13 @@ function createChangeCard(changeId, change) {
     const card = document.createElement('div');
     card.className = 'change-card';
     
-    const timestamp = new Date(change.timestamp).toLocaleString();
+    const relativeTime = formatRelativeTime(change.timestamp);
     
     card.innerHTML = `
         <div class="change-header">
             <div class="change-info">
                 <h2 class="change-artist">${change.artistName}</h2>
-                <div class="change-timestamp">${timestamp}</div>
+                <div class="change-timestamp">${relativeTime}</div>
             </div>
             <div class="change-actions">
                 <button class="preview-btn preview-previous">View Previous</button>
@@ -374,7 +413,7 @@ function createSectionComparison(previousState, proposedState) {
             <div class="previous-version">
                 <div class="version-label">Previous Version</div>
                 <div class="feature-image-section">
-                    <h3>Feature Image</h3>
+                    <h3 class="feature-image-title">Feature Image</h3>
                     ${previousFeatureImage}
                 </div>
                 ${previousSections.map(section => {
@@ -406,7 +445,7 @@ function createSectionComparison(previousState, proposedState) {
             <div class="new-version">
                 <div class="version-label">New Version</div>
                 <div class="feature-image-section">
-                    <h3>Feature Image</h3>
+                    <h3 class="feature-image-title">Feature Image</h3>
                     ${proposedFeatureImage}
                 </div>
                 ${proposedSections.map(section => {
@@ -476,10 +515,9 @@ style.textContent = `
     }
 
     .change-card {
-        background: #eeeeee;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 1rem;
+        background: #2f2f2f;
+        border-radius: 32px;
+        padding: 2rem;
         margin-bottom: 1rem;
     }
 
@@ -487,8 +525,7 @@ style.textContent = `
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
-        background: #eeeeee;
-        padding: 1rem;
+        background: #2f2f2f;
         border-radius: 4px;
     }
 
@@ -496,7 +533,7 @@ style.textContent = `
     .new-version {
         background: #eeeeee;
         padding: 1rem;
-        border-radius: 4px;
+        border-radius: 20px;
         border: 1px solid #ddd;
     }
 `;
@@ -521,6 +558,7 @@ featureImageStyle.textContent = `
     .feature-image-section {
         margin-bottom: 2rem;
         padding: 1rem;
+        padding-top: 4rem;
         background: #eeeeee;
         border-radius: 4px;
     }

@@ -343,6 +343,7 @@ button:hover {
 .notification-title {
     font-weight: 500;
     margin-bottom: 0.3rem;
+    color: #000;
 }
 
 .notification-message {
@@ -482,7 +483,7 @@ button:hover {
     padding: 0.75rem 1rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
-        display: flex;
+    display: flex;
     align-items: center;
     gap: 1rem;
     text-decoration: none;
