@@ -41,25 +41,12 @@
         }
 
         .dashboard-container {
-            background: #111111;
-        }
-
-        .welcome-title {
-            color: white;
-        }
-
-        footer p {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .dashboard-container {
             padding: calc(var(--navbar-height) + 4rem) 2rem 2rem 2rem;
             max-width: 2200px;
             margin: 0 auto;
             min-height: calc(100vh - var(--navbar-height));
             display: flex;
             flex-direction: column;
-            align-items: center;
             width: 100%;
             box-sizing: border-box;
         }
@@ -72,6 +59,7 @@
             margin-bottom: 4rem;
             width: 100%;
             padding-top: 2rem;
+            box-sizing: border-box;
         }
 
         .header-left {
@@ -414,11 +402,10 @@
 
         .stats-cards-container {
             display: grid;
-            grid-template-columns: 35% 65%;
+            grid-template-columns: minmax(auto, 35%) minmax(auto, 65%);
             gap: 1.5rem;
             margin-bottom: 2rem;
             width: 100%;
-            max-width: 2200px;
             box-sizing: border-box;
         }
 
@@ -426,7 +413,7 @@
             background: white;
             border-radius: 32px;
             padding: 1.5rem;
-            margin-top: 0rem;
+            margin-top: 0;
             width: 100%;
             box-sizing: border-box;
         }
