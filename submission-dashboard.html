@@ -10,30 +10,49 @@
     <style>
         /* Override navbar styles for this page */
         .navbar {
-            background: transparent;
-            border-bottom: none;
+            --bs-navbar-padding-x: 0;
+            --bs-navbar-padding-y: 0;
+            background: transparent !important;
+            border-bottom: none !important;
+            padding: 1.5rem 1rem !important;
+            flex-wrap: nowrap !important;
+            display: flex !important;
+            align-items: center !important;
+            position: absolute !important;
+        }
+
+        .navbar .nav-brand {
+            flex-shrink: 0 !important;
+        }
+
+        .navbar .nav-links {
+            flex-shrink: 0 !important;
+        }
+
+        .navbar .nav-right {
+            flex-shrink: 0 !important;
         }
 
         .navbar .nav-brand a,
         .navbar .nav-links a,
         .navbar .nav-submit-button {
-            color: white;
+            color: white !important;
         }
 
         .navbar .nav-submit-button {
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.2) !important;
         }
 
         .navbar .nav-submit-button:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.1) !important;
         }
 
         .mobile-menu span {
-            background-color: white;
+            background-color: white !important;
         }
 
         .notification-bell i {
-            color: white;
+            color: white !important;
         }
 
         /* Page specific styles */
@@ -323,44 +342,6 @@
                 align-items: flex-start;
                 gap: 1.5rem;
                 padding-top: 1rem;
-            }
-
-            .unread-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-
-            .unread-count-container {
-                width: 140px;
-                height: 140px;
-            }
-
-            .unread-count {
-                font-size: 4rem;
-            }
-
-            .unread-label {
-                font-size: 1.6rem;
-            }
-
-            .welcome-section {
-                position: static;
-                text-align: left;
-                margin-bottom: 2rem;
-            }
-
-            .welcome-title {
-                font-size: 3rem;
-            }
-
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-bar {
-                flex-direction: column;
-                gap: 1rem;
             }
         }
 
