@@ -351,47 +351,83 @@ async function loadPendingChanges() {
 }
 
 function createChangeCard(changeId, change) {
-    const card = document.createElement('div');
-    card.className = 'change-card';
-    
-    const relativeTime = formatRelativeTime(change.timestamp);
-    
-    card.innerHTML = `
+    // Create the card element from scratch instead of using template
+    const cardElement = document.createElement('div');
+    cardElement.className = 'change-card';
+    cardElement.dataset.changeId = changeId;
+
+    cardElement.innerHTML = `
         <div class="change-header">
             <div class="change-info">
-                <h2 class="change-artist">${change.artistName}</h2>
-                <div class="change-timestamp">${relativeTime}</div>
+                <div class="change-artist">${change.artistName}</div>
+                <div class="change-timestamp">${formatRelativeTime(change.timestamp)}</div>
             </div>
             <div class="change-actions">
-                <button class="preview-btn preview-previous">View Previous</button>
-                <button class="preview-btn preview-new">View New</button>
-                <button class="approve-btn" data-change-id="${changeId}">Approve</button>
-                <button class="reject-btn" data-change-id="${changeId}">Reject</button>
+                <button class="view-previous-btn">View Previous</button>
+                <button class="view-new-btn">View New</button>
+                <button class="approve-btn">Approve</button>
+                <button class="reject-btn">Reject</button>
             </div>
         </div>
         <div class="change-content">
             ${createSectionComparison(change.previousState, change.proposedState)}
         </div>
+        <div class="rejection-reason-container">
+            <textarea class="rejection-reason-input" placeholder="Enter reason for rejection..."></textarea>
+            <div class="rejection-buttons">
+                <button class="cancel-rejection-btn">Cancel</button>
+                <button class="confirm-rejection-btn">Confirm Rejection</button>
+            </div>
+        </div>
     `;
 
-    // Add event listeners for buttons
-    card.querySelector('.approve-btn').addEventListener('click', () => handleApprove(changeId, change));
-    card.querySelector('.reject-btn').addEventListener('click', () => handleReject(changeId, change));
-    
-    // Update preview buttons to navigate to artist pages
-    card.querySelector('.preview-previous').addEventListener('click', () => {
-        if (change.previousState) {
-            window.location.href = `artist.html?name=${encodeURIComponent(change.artistName)}&version=previous`;
-        } else {
-            alert('No previous version available');
-        }
+    // Add event listeners
+    const viewPreviousBtn = cardElement.querySelector('.view-previous-btn');
+    const viewNewBtn = cardElement.querySelector('.view-new-btn');
+    const approveBtn = cardElement.querySelector('.approve-btn');
+    const rejectBtn = cardElement.querySelector('.reject-btn');
+    const rejectionContainer = cardElement.querySelector('.rejection-reason-container');
+    const cancelRejectBtn = cardElement.querySelector('.cancel-rejection-btn');
+    const confirmRejectBtn = cardElement.querySelector('.confirm-rejection-btn');
+    const rejectionInput = cardElement.querySelector('.rejection-reason-input');
+
+    viewPreviousBtn.addEventListener('click', () => {
+        window.location.href = `artist.html?name=${encodeURIComponent(change.artistName)}&version=previous`;
     });
-    
-    card.querySelector('.preview-new').addEventListener('click', () => {
+
+    viewNewBtn.addEventListener('click', () => {
         window.location.href = `artist.html?name=${encodeURIComponent(change.artistName)}&version=new`;
     });
 
-    return card;
+    approveBtn.addEventListener('click', () => handleApprove(changeId, change));
+
+    rejectBtn.addEventListener('click', () => {
+        rejectionContainer.classList.add('active');
+        // Wait a tiny bit for the container to become visible before scrolling
+        setTimeout(() => {
+            rejectionContainer.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center'
+            });
+            rejectionInput.focus();
+        }, 50);
+    });
+
+    cancelRejectBtn.addEventListener('click', () => {
+        rejectionContainer.classList.remove('active');
+        rejectionInput.value = '';
+    });
+
+    confirmRejectBtn.addEventListener('click', () => {
+        const reason = rejectionInput.value.trim();
+        if (!reason) {
+            alert('Please provide a reason for rejection');
+            return;
+        }
+        handleReject(changeId, change, reason);
+    });
+
+    return cardElement;
 }
 
 function createSectionComparison(previousState, proposedState) {
@@ -630,42 +666,81 @@ async function handleApprove(changeId, change) {
     }
 }
 
-async function handleReject(changeId, change) {
+async function handleReject(changeId, change, rejectionReason) {
     try {
-        // Only try to restore previous state if the artist page exists
-        const artistRef = doc(db, 'artistPages', change.artistName);
-        const artistDoc = await getDoc(artistRef);
-        
-        if (artistDoc.exists() && change.previousState) {
-            await updateDoc(artistRef, {
-                sections: change.previousState.sections,
-                lastUpdated: new Date().toISOString()
-            });
+        // Get the change document first to ensure it exists
+        const changeRef = doc(db, 'pendingChanges', changeId);
+        const changeDoc = await getDoc(changeRef);
+
+        if (!changeDoc.exists()) {
+            throw new Error('Change document not found');
         }
 
-        // Mark change as rejected
-        const changeRef = doc(db, 'pendingChanges', changeId);
+        const changeData = changeDoc.data();
+
+        // Update the change document with rejection status and reason
         await updateDoc(changeRef, {
             status: 'rejected',
-            rejectedAt: new Date().toISOString()
+            rejectionReason: rejectionReason
         });
 
         // Create notification for the artist
-        const notificationRef = collection(db, 'notifications');
-        await addDoc(notificationRef, {
-            userId: change.artistName,
+        await addDoc(collection(db, 'notifications'), {
+            userId: changeData.artistName,
             type: 'change_rejected',
-            message: 'Your page changes have been rejected',
-            timestamp: new Date().toISOString(),
+            message: `Your page changes were not approved.\n\nReason: ${rejectionReason}`,
+            timestamp: new Date(),
             read: false,
-            artistName: change.artistName,
             changeId: changeId
         });
 
-        // Refresh the changes list
-        loadPendingChanges();
+        // Remove the card from the UI
+        const card = document.querySelector(`[data-change-id="${changeId}"]`);
+        if (card) {
+            card.remove();
+        }
+
+        // Show success message
+        showMessage('Changes rejected');
     } catch (error) {
-        console.error('Error rejecting changes:', error);
-        alert('Error rejecting changes. Please try again.');
+        console.error('Error rejecting change:', error);
+        showMessage('Error rejecting changes', true);
     }
-} 
+}
+
+function showMessage(message, isError = false) {
+    // Remove any existing messages first
+    const existingMessages = document.querySelectorAll('.message');
+    existingMessages.forEach(msg => msg.remove());
+
+    const messageContainer = document.createElement('div');
+    messageContainer.className = `message ${isError ? 'error' : ''}`;
+    messageContainer.textContent = message;
+    document.body.appendChild(messageContainer);
+
+    // Add animation end cleanup
+    messageContainer.addEventListener('animationend', () => {
+        setTimeout(() => {
+            messageContainer.style.animation = 'fadeOut 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            messageContainer.addEventListener('animationend', () => {
+                messageContainer.remove();
+            });
+        }, 2000);
+    });
+}
+
+// Add fadeOut animation style
+const messageStyle = document.createElement('style');
+messageStyle.textContent = `
+    @keyframes fadeOut {
+        from {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+        to {
+            transform: translate(-50%, -100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(messageStyle); 

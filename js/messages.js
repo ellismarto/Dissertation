@@ -94,7 +94,8 @@ function displayMessages(messages) {
                 <div class="message-item ${message.read ? '' : 'unread'}" data-id="${message.id}">
                     <button class="delete-message-btn" data-id="${message.id}" title="Delete message">×</button>
                     <div class="message-sender">${message.name}</div>
-                    <div class="message-content">${message.subject}</div>
+                    <div class="message-subject">${message.subject}</div>
+                    <div class="message-content">${message.message}</div>
                     <div class="message-time">${formatTime(message.timestamp)}</div>
                 </div>
             `).join('')}

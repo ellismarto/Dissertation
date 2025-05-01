@@ -1968,23 +1968,35 @@ async function loadSubmissions() {
             .filter(doc => doc.data().type === 'artist_page_update')
             .map(doc => {
                 const data = doc.data();
-                const date = new Date(data.timestamp).toLocaleDateString();
-                const status = data.status;
-                const statusClass = status === 'approved' ? 'approved' : 
-                                  status === 'rejected' ? 'rejected' : 'pending';
-                
-                // Count the number of sections in the proposed state
-                const sectionCount = data.proposedState.sections?.length || 0;
-                
+                const date = new Date(data.timestamp);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                let statusClass = 'pending';
+                let statusText = 'Pending';
+                if (data.status === 'approved') {
+                    statusClass = 'approved';
+                    statusText = 'Approved';
+                } else if (data.status === 'rejected') {
+                    statusClass = 'rejected';
+                    statusText = 'Rejected';
+                }
+
                 return `
                     <div class="submission-item">
-                        <div class="submission-title">Page Version from ${date}</div>
-                        <div class="submission-details">
-                            <span class="section-count">${sectionCount} sections</span>
-                            <span class="submission-status ${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
-                        </div>
+                        <div class="submission-title">Page Update</div>
+                        <div class="submission-date">${formattedDate}</div>
+                        <div class="submission-status ${statusClass}">${statusText}</div>
+                        ${data.status === 'rejected' && data.rejectionReason ? `
+                            <div class="submission-rejection-reason">
+                                ${data.rejectionReason}
+                            </div>
+                        ` : ''}
                         <div class="submission-actions">
-                            <button class="edit-submission-btn" data-id="${doc.id}">View & Restore</button>
+                            <button class="edit-submission-btn" data-id="${doc.id}">Edit This Version</button>
                         </div>
                     </div>
                 `;

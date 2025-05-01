@@ -102,7 +102,34 @@
             gap: 1rem;
         }
 
-        .approve-btn, .reject-btn, .preview-btn {
+        .view-previous-btn,
+        .view-new-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            background: #3f3f3f;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-previous-btn:hover,
+        .view-new-btn:hover {
+            background: #4f4f4f;
+            transform: translateY(-1px);
+        }
+
+        .view-previous-btn {
+            border-color: #4f4f4f;
+        }
+
+        .view-new-btn {
+            border-color: #4f4f4f;
+        }
+
+        .approve-btn, .reject-btn {
             padding: 0.75rem 1.5rem;
             border: none;
             border-radius: 100px;
@@ -120,17 +147,6 @@
         .reject-btn {
             background: #c62828;
             color: white;
-        }
-
-        .preview-btn {
-            background: #3f3f3f;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .preview-btn:hover {
-            background: #4f4f4f;
-            transform: translateY(-1px);
         }
 
         .approve-btn:hover {
@@ -348,6 +364,133 @@
                 font-size: 2.5rem;
             }
         }
+
+        .rejection-reason-container {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .rejection-reason-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .rejection-reason-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: #3f3f3f;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+        }
+
+        .rejection-reason-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .rejection-reason-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .rejection-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .confirm-rejection-btn {
+            background: #c62828;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .confirm-rejection-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-1px);
+        }
+
+        .cancel-rejection-btn {
+            background: #3f3f3f;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-rejection-btn:hover {
+            background: #4f4f4f;
+            transform: translateY(-1px);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            position: fixed;
+            top: calc(var(--navbar-height) + 2rem);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            z-index: 10000;
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: #2f2f2f;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .message::before {
+            content: '✓';
+            font-size: 1.1rem;
+            color: #7baf76;
+        }
+
+        .message.error {
+            background: #c62828;
+            border: none;
+        }
+
+        .message.error::before {
+            content: '!';
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -376,6 +519,32 @@
         </div>
         <div id="changes-list">
             <!-- Changes will be loaded here -->
+            <template id="change-card-template">
+                <div class="change-card">
+                    <div class="change-header">
+                        <div class="change-info">
+                            <div class="change-artist"></div>
+                            <div class="change-timestamp"></div>
+                        </div>
+                        <div class="change-actions">
+                            <button class="view-previous-btn">View Previous</button>
+                            <button class="view-new-btn">View New</button>
+                            <button class="approve-btn">Approve</button>
+                            <button class="reject-btn">Reject</button>
+                        </div>
+                    </div>
+                    <div class="change-content">
+                        <!-- Change content will be loaded here -->
+                    </div>
+                    <div class="rejection-reason-container">
+                        <textarea class="rejection-reason-input" placeholder="Enter reason for rejection..."></textarea>
+                        <div class="rejection-buttons">
+                            <button class="cancel-rejection-btn">Cancel</button>
+                            <button class="confirm-rejection-btn">Confirm Rejection</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
         </div>
     </main>
 

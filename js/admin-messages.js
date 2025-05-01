@@ -139,7 +139,7 @@ async function deleteSelectedMessages() {
 }
 
 // Update submission status
-async function updateSubmissionStatus(submissionId, newStatus) {
+async function updateSubmissionStatus(submissionId, newStatus, rejectionReason = '') {
     try {
         const submissionRef = doc(db, 'submissions', submissionId);
         const submissionDoc = await getDoc(submissionRef);
@@ -148,7 +148,8 @@ async function updateSubmissionStatus(submissionId, newStatus) {
         // Update submission status
         await updateDoc(submissionRef, {
             status: newStatus,
-            reviewedAt: new Date()
+            reviewedAt: new Date(),
+            ...(newStatus === 'rejected' && rejectionReason ? { rejectionReason } : {})
         });
         
         // Create notification based on status
@@ -156,7 +157,7 @@ async function updateSubmissionStatus(submissionId, newStatus) {
             type: newStatus === 'approved' ? 'submission_approved' : 'submission_rejected',
             message: newStatus === 'approved' 
                 ? `Your submission has been approved! Your artist page is now live.`
-                : `Your submission has been reviewed but was not approved at this time.`,
+                : `Your submission has been reviewed but was not approved at this time.${rejectionReason ? `\n\nReason: ${rejectionReason}` : ''}`,
             timestamp: new Date(),
             read: false,
             submissionId: submissionId
@@ -167,6 +168,9 @@ async function updateSubmissionStatus(submissionId, newStatus) {
         if (submission) {
             submission.status = newStatus;
             submission.reviewedAt = new Date();
+            if (newStatus === 'rejected' && rejectionReason) {
+                submission.rejectionReason = rejectionReason;
+            }
         }
         
         updateStats();
@@ -174,6 +178,46 @@ async function updateSubmissionStatus(submissionId, newStatus) {
     } catch (error) {
         console.error('Error updating submission status:', error);
         alert('Error updating submission status. Please try again.');
+    }
+}
+
+// Show rejection reason input
+function showRejectionReason(submissionId) {
+    const submissionCard = document.querySelector(`.message-card[data-id="${submissionId}"]`);
+    if (!submissionCard) return;
+
+    const rejectionContainer = submissionCard.querySelector('.rejection-reason-container');
+    if (rejectionContainer) {
+        rejectionContainer.classList.add('visible');
+        rejectionContainer.querySelector('.rejection-reason-input').focus();
+    }
+}
+
+// Hide rejection reason input
+function hideRejectionReason(submissionId) {
+    const submissionCard = document.querySelector(`.message-card[data-id="${submissionId}"]`);
+    if (!submissionCard) return;
+
+    const rejectionContainer = submissionCard.querySelector('.rejection-reason-container');
+    if (rejectionContainer) {
+        rejectionContainer.classList.remove('visible');
+        rejectionContainer.querySelector('.rejection-reason-input').value = '';
+    }
+}
+
+// Handle rejection confirmation
+function confirmRejection(submissionId) {
+    const submissionCard = document.querySelector(`.message-card[data-id="${submissionId}"]`);
+    if (!submissionCard) return;
+
+    const rejectionInput = submissionCard.querySelector('.rejection-reason-input');
+    const rejectionReason = rejectionInput.value.trim();
+    
+    if (rejectionReason) {
+        updateSubmissionStatus(submissionId, 'rejected', rejectionReason);
+    } else {
+        alert('Please provide a reason for rejection.');
+        rejectionInput.focus();
     }
 }
 
@@ -331,6 +375,8 @@ async function renderSubmissions() {
         }
         imagesHTML += '</div>';
         
+        submissionCard.setAttribute('data-id', data.id);
+        
         submissionCard.innerHTML = `
             ${headerHTML}
             <div class="message-content">
@@ -340,12 +386,24 @@ async function renderSubmissions() {
             ${data.status === 'pending' ? `
                 <div class="action-buttons">
                     <button class="approve-btn" onclick="updateSubmissionStatus('${data.id}', 'approved')">Approve</button>
-                    <button class="reject-btn" onclick="updateSubmissionStatus('${data.id}', 'rejected')">Reject</button>
+                    <button class="reject-btn" onclick="showRejectionReason('${data.id}')">Reject</button>
+                </div>
+                <div class="rejection-reason-container">
+                    <textarea class="rejection-reason-input" placeholder="Please provide a reason for rejection..."></textarea>
+                    <div class="rejection-actions">
+                        <button class="cancel-rejection-btn" onclick="hideRejectionReason('${data.id}')">Cancel</button>
+                        <button class="confirm-rejection-btn" onclick="confirmRejection('${data.id}')">Confirm Rejection</button>
+                    </div>
                 </div>
             ` : data.status === 'rejected' ? `
                 <div class="action-buttons">
                     <button class="delete-btn" onclick="deleteSubmission('${data.id}')">Delete Submission</button>
                 </div>
+                ${data.rejectionReason ? `
+                    <div class="rejection-reason-container visible">
+                        <div class="rejection-reason-input" style="background: transparent; cursor: default;">${data.rejectionReason}</div>
+                    </div>
+                ` : ''}
             ` : ''}
         `;
         
@@ -393,6 +451,9 @@ async function deleteSubmission(submissionId) {
 // Make functions available globally
 window.updateSubmissionStatus = updateSubmissionStatus;
 window.deleteSubmission = deleteSubmission;
+window.showRejectionReason = showRejectionReason;
+window.hideRejectionReason = hideRejectionReason;
+window.confirmRejection = confirmRejection;
 
 // Initialize
 loadSubmissions(); 

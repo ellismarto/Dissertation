@@ -113,14 +113,20 @@ function displayNotifications(notifications) {
             <button class="delete-all-btn">Delete All</button>
         </div>
         <div class="notifications-scroll-container">
-            ${notifications.map(notification => `
-                <div class="notification-item ${notification.read ? '' : 'unread'}" data-id="${notification.id}">
-                    <div class="notification-title">${getNotificationTitle(notification.type)}</div>
-                    <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${formatTime(notification.timestamp)}</div>
-                    <button class="delete-notification-btn" data-id="${notification.id}">×</button>
-                </div>
-            `).join('')}
+            ${notifications.map(notification => {
+                // Split message into main message and reason
+                const [mainMessage, reason] = notification.message.split('\n\nReason:');
+                
+                return `
+                    <div class="notification-item ${notification.read ? '' : 'unread'}" data-id="${notification.id}">
+                        <div class="notification-title">${getNotificationTitle(notification.type)}</div>
+                        <div class="notification-message">${mainMessage}</div>
+                        ${reason ? `<div class="notification-reason">${reason}</div>` : ''}
+                        <div class="notification-time">${formatTime(notification.timestamp)}</div>
+                        <button class="delete-notification-btn" data-id="${notification.id}">×</button>
+                    </div>
+                `;
+            }).join('')}
         </div>
     `;
 

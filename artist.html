@@ -329,9 +329,11 @@
 
         .view-toggle button {
             padding: 0.8rem 1.5rem;
-            background: #000;
+            background: #00000041;
+            backdrop-filter: blur(10px);
             color: white;
-            border: none;
+            border: 1px solid #ddd;
+            border-radius: 10rem;
             font-size: 0.85rem;
             cursor: pointer;
             transition: opacity 0.3s ease;
@@ -342,7 +344,7 @@
         }
 
         .view-toggle button.active {
-            background: #333;
+            background: #000000;
         }
 
         /* Collapsed View */
@@ -476,6 +478,18 @@
         .submission-status.rejected {
             background: #fce8e6;
             color: #c5221f;
+        }
+
+        .submission-rejection-reason {
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: #fff3f3;
+            border-left: 3px solid #ff3b30;
+            color: #c62828;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            border-radius: 0 4px 4px 0;
         }
 
         .submission-status.pending {
@@ -735,7 +749,7 @@
             position: absolute;
             top: 100%;
             right: 0;
-            width: 300px;
+            width: 500px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -828,7 +842,8 @@
 
         .message-sender {
             font-weight: 500;
-            margin-bottom: 0.3rem;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
             color: #000;
             padding-right: 30px;
         }
@@ -836,13 +851,25 @@
         .message-content {
             color: #666;
             font-size: 0.9rem;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
             padding-right: 30px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         .message-time {
             color: #999;
             font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .message-subject {
+            font-weight: 500;
+            color: #333;
+            padding-right: 30px;
+            font-size: 0.9rem;
         }
 
         .no-messages {
@@ -863,6 +890,82 @@
 
         .delete-all-messages-btn:hover {
             color: #ff4444;
+        }
+
+        /* Version toggle styles */
+        .version-toggle {
+            position: fixed;
+            top: calc(var(--navbar-height) + 1rem);
+            right: 1rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        .back-button {
+            position: fixed;
+            top: calc(var(--navbar-height) + 1rem);
+            left: 1rem;
+            z-index: 1000;
+            display: none;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 100px;
+            background: #00000041;
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: #444;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .back-button i {
+            font-size: 0.9rem;
+        }
+
+        .version-toggle-btn {
+            display: none;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 100px;
+            background: #00000041;
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .version-toggle-btn:hover {
+            background: #444;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .version-toggle-btn .toggle-text {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .version-toggle {
+                right: 1rem;
+            }
+            .back-button {
+                left: 1rem;
+            }
         }
     </style>
 </head>
@@ -912,6 +1015,19 @@
                 <i class="fas fa-message"></i>
             </button>
             <h1 class="artist-name" id="artist-name"></h1>
+        </div>
+
+        <!-- Add back button -->
+        <a href="artist-changes.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Changes
+        </a>
+
+        <!-- Add version toggle button -->
+        <div class="version-toggle">
+            <button id="version-toggle-btn" class="version-toggle-btn">
+                <span class="toggle-text">View New Version</span>
+            </button>
         </div>
 
         <div id="empty-state" class="empty-state">
@@ -981,6 +1097,37 @@
         import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Version toggle functionality
+            const versionToggle = document.querySelector('.version-toggle');
+            const versionToggleBtn = document.getElementById('version-toggle-btn');
+            const backButton = document.querySelector('.back-button');
+            const urlParams = new URLSearchParams(window.location.search);
+            const version = urlParams.get('version');
+            const artistName = urlParams.get('name');
+
+            // Hide version toggle and back button by default
+            versionToggle.style.display = 'none';
+            versionToggleBtn.style.display = 'none';
+            backButton.style.display = 'none';
+
+            // Only show toggle and back button if we're explicitly viewing a version
+            if (version && (version === 'previous' || version === 'new')) {
+                versionToggle.style.display = 'block';
+                versionToggleBtn.style.display = 'flex';
+                backButton.style.display = 'flex';
+                versionToggleBtn.className = `version-toggle-btn ${version}`;
+                
+                // Set button text based on current version
+                const toggleText = versionToggleBtn.querySelector('.toggle-text');
+                toggleText.textContent = version === 'previous' ? 'View New Version' : 'View Previous Version';
+
+                // Add click handler
+                versionToggleBtn.addEventListener('click', () => {
+                    const newVersion = version === 'previous' ? 'new' : 'previous';
+                    window.location.href = `artist.html?name=${encodeURIComponent(artistName)}&version=${newVersion}`;
+                });
+            }
+
             // Contact form functionality
             const contactBar = document.querySelector('.contact-bar');
             const contactPopover = document.querySelector('.contact-popover');

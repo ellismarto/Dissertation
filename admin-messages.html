@@ -503,6 +503,78 @@
             box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
         }
 
+        .rejection-reason-container {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rejection-reason-container.visible {
+            display: block;
+        }
+
+        .rejection-reason-input {
+            width: 100%;
+            background: #3f3f3f;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .rejection-reason-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: #4f4f4f;
+        }
+
+        .rejection-reason-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .rejection-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .cancel-rejection-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-rejection-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .confirm-rejection-btn {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .confirm-rejection-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
+        }
+
         .approve-btn:hover, .reject-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
