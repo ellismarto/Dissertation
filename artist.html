@@ -19,6 +19,37 @@
             position: relative;
         }
 
+        .contact-bar {
+            background: #111111;
+            padding: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 9998;
+        }
+
+        .editing .contact-bar {
+            display: none;
+        }
+
+        .contact-bar:hover {
+            background: #222222;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
         .artist-name {
             font-size: 7rem;
             font-weight: 500;
@@ -361,7 +392,7 @@
             height: 100vh;
             background: white;
             box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
+            z-index: 10001;
             transition: right 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -385,17 +416,17 @@
             font-weight: 500;
         }
 
-        .close-popover {
+        .submissions-close-btn {
             background: none;
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #666;
             padding: 0.5rem;
-            line-height: 1;
+            color: #666;
+            transition: color 0.3s ease;
         }
 
-        .close-popover:hover {
+        .submissions-close-btn:hover {
             color: #000;
         }
 
@@ -472,6 +503,159 @@
             background: #333;
         }
 
+        /* Contact Form Popover */
+        .contact-button {
+            position: fixed;
+            right: 2rem;
+            top: calc(var(--navbar-height) + 1rem);
+            padding: 0.8rem 1.5rem;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 9998;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contact-button i {
+            font-size: 0.9rem;
+        }
+
+        .contact-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .contact-popover {
+            position: fixed;
+            top: 0;
+            left: -500px;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+            z-index: 10002;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 2rem;
+            box-sizing: border-box;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+        }
+
+        .contact-popover::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .contact-popover::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .contact-popover::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .contact-popover::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .contact-popover.active {
+            left: 0;
+        }
+
+        .contact-popover-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .contact-popover-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .contact-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: #666;
+            transition: color 0.3s ease;
+            pointer-events: all;
+            z-index: 10000;
+            position: relative;
+        }
+
+        .contact-close-btn:hover {
+            color: #000;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-button {
+            padding: 1rem 2rem;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+
+        .contact-form-label {
+            margin-bottom: 0rem;
+        }
+
         @media (max-width: 768px) {
             .artist-container {
                 padding: calc(var(--navbar-height) + 1rem) 0rem 1rem 0rem;
@@ -497,6 +681,17 @@
             .submissions-popover {
                 width: 100%;
                 right: -100%;
+            }
+
+            .contact-popover {
+                width: 100%;
+                left: -100%;
+            }
+
+            .contact-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.85rem;
+                right: 1rem;
             }
         }
     </style>
@@ -538,6 +733,9 @@
 
     <main class="artist-container">
         <div class="artist-header">
+            <button class="contact-bar" aria-label="Contact Artist">
+                <i class="fas fa-message"></i>
+            </button>
             <h1 class="artist-name" id="artist-name"></h1>
         </div>
 
@@ -571,10 +769,94 @@
         </div>
     </main>
 
+    <div class="contact-popover">
+        <div class="contact-popover-header">
+            <h2 class="contact-popover-title">Contact Artist</h2>
+            <button id="contact-close-btn" class="contact-close-btn" type="button">&times;</button>
+        </div>
+        <form class="contact-form">
+            <div class="form-group">
+                <label for="name" class="contact-form-label">Your Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="contact-form-label">Your Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="subject" class="contact-form-label">Subject</label>
+                <input type="text" id="subject" name="subject" required>
+            </div>
+            <div class="form-group">
+                <label for="message" class="contact-form-label">Message</label>
+                <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="submit-button">Send Message</button>
+        </form>
+    </div>
+
     <script type="module" src="js/firebase-config.js" defer></script>
     <script type="module" src="js/artist.js" defer></script>
     <script type="module" src="js/search.js" defer></script>
     <script type="module" src="js/notifications.js" defer></script>
     <script src="js/menu.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Contact form functionality
+            const contactBar = document.querySelector('.contact-bar');
+            const contactPopover = document.querySelector('.contact-popover');
+            const contactCloseBtn = document.getElementById('contact-close-btn');
+            const contactForm = document.querySelector('.contact-form');
+
+            function closeContactForm() {
+                contactPopover.classList.remove('active');
+            }
+
+            contactBar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                contactPopover.classList.add('active');
+            });
+
+            contactCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                closeContactForm();
+            });
+
+            // Close popover when clicking outside
+            document.addEventListener('click', (e) => {
+                const isClickInside = contactPopover.contains(e.target) || contactBar.contains(e.target);
+                if (!isClickInside) {
+                    closeContactForm();
+                }
+            });
+
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const artistName = urlParams.get('name');
+
+                const formData = {
+                    artistName: artistName,
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    subject: document.getElementById('subject').value,
+                    message: document.getElementById('message').value,
+                    timestamp: new Date()
+                };
+
+                try {
+                    console.log('Form submitted:', formData);
+                    contactForm.reset();
+                    closeContactForm();
+                    alert('Message sent successfully!');
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    alert('Error sending message. Please try again.');
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
