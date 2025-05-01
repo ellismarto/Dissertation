@@ -6,6 +6,7 @@ import { getAuth } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-auth
 const notificationBell = document.querySelector('.notification-bell');
 const notificationBadge = document.querySelector('.notification-badge');
 const notificationDropdown = document.querySelector('.notification-dropdown');
+const messagesDropdown = document.querySelector('.messages-dropdown');
 
 // State
 let unsubscribeNotifications = null;
@@ -24,6 +25,10 @@ function setupClickHandlers() {
     notificationBell.addEventListener('click', (e) => {
         e.stopPropagation();
         notificationDropdown.classList.toggle('active');
+        // Close messages dropdown if open
+        if (messagesDropdown) {
+            messagesDropdown.classList.remove('active');
+        }
     });
 
     // Close dropdown when clicking outside

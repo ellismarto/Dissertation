@@ -694,6 +694,176 @@
                 right: 1rem;
             }
         }
+
+        .nav-right {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 1;
+        }
+
+        .messages-bell {
+            position: relative;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .messages-bell:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .messages-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(30%, -30%);
+        }
+
+        .messages-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            display: none;
+            z-index: 1000;
+        }
+
+        .messages-dropdown.active {
+            display: block;
+        }
+
+        .messages-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            background-color: #f8f8f8;
+        }
+
+        .messages-header span {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .messages-scroll-container {
+            max-height: calc(80vh - 60px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+        }
+
+        .messages-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-scroll-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-scroll-container::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .messages-scroll-container::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .message-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            background: white;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .message-item:hover {
+            background-color: #f8f8f8;
+        }
+
+        .message-item:last-child {
+            border-bottom: none;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .message-item.unread {
+            background: #f8f8f8;
+        }
+
+        .delete-message-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            z-index: 10;
+            transition: color 0.2s ease;
+        }
+
+        .delete-message-btn:hover {
+            color: #ff4444;
+        }
+
+        .message-sender {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            color: #000;
+            padding-right: 30px;
+        }
+
+        .message-content {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            padding-right: 30px;
+        }
+
+        .message-time {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .no-messages {
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+        }
+
+        .delete-all-messages-btn {
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .delete-all-messages-btn:hover {
+            color: #ff4444;
+        }
     </style>
 </head>
 <body>
@@ -718,6 +888,11 @@
         </div>
         <div class="nav-right">
             <a href="submit.html" class="nav-submit-button">Submit Work</a>
+            <div class="messages-bell">
+                <span class="messages-badge"></span>
+                <i class="fas fa-envelope"></i>
+                <div class="messages-dropdown"></div>
+            </div>
             <div class="notification-bell">
                 <span class="notification-badge"></span>
                 <i class="fas fa-bell"></i>
@@ -785,7 +960,7 @@
             </div>
             <div class="form-group">
                 <label for="subject" class="contact-form-label">Subject</label>
-                <input type="text" id="subject" name="subject" required>
+                <input type="text" id="subject" name="subject" required autocomplete="off">
             </div>
             <div class="form-group">
                 <label for="message" class="contact-form-label">Message</label>
@@ -799,8 +974,12 @@
     <script type="module" src="js/artist.js" defer></script>
     <script type="module" src="js/search.js" defer></script>
     <script type="module" src="js/notifications.js" defer></script>
+    <script type="module" src="js/messages.js" defer></script>
     <script src="js/menu.js" defer></script>
-    <script>
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+
         document.addEventListener('DOMContentLoaded', function() {
             // Contact form functionality
             const contactBar = document.querySelector('.contact-bar');
@@ -843,11 +1022,15 @@
                     email: document.getElementById('email').value,
                     subject: document.getElementById('subject').value,
                     message: document.getElementById('message').value,
-                    timestamp: new Date()
+                    timestamp: new Date(),
+                    read: false
                 };
 
                 try {
-                    console.log('Form submitted:', formData);
+                    // Save to Firebase
+                    const messagesRef = collection(db, 'messages');
+                    await addDoc(messagesRef, formData);
+                    
                     contactForm.reset();
                     closeContactForm();
                     alert('Message sent successfully!');
