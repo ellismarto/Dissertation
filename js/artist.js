@@ -334,7 +334,9 @@ async function loadArtistContent() {
                 if (artistDoc.exists()) {
                     currentArtist = artistDoc.data();
                 } else {
-                    showEmptyState();
+                    emptyState.style.display = 'block';
+                    sectionsContainer.style.display = 'none';
+                    sectionsContainer.innerHTML = '';
                     return;
                 }
             }
@@ -358,7 +360,9 @@ async function loadArtistContent() {
                 if (artistDoc.exists()) {
                     currentArtist = artistDoc.data();
                 } else {
-                    showEmptyState();
+                    emptyState.style.display = 'block';
+                    sectionsContainer.style.display = 'none';
+                    sectionsContainer.innerHTML = '';
                     return;
                 }
             }
@@ -367,7 +371,9 @@ async function loadArtistContent() {
             if (artistDoc.exists()) {
                 currentArtist = artistDoc.data();
             } else {
-                showEmptyState();
+                emptyState.style.display = 'block';
+                sectionsContainer.style.display = 'none';
+                sectionsContainer.innerHTML = '';
                 return;
             }
         }
@@ -399,7 +405,9 @@ async function loadArtistContent() {
         displayContent(currentArtist);
     } catch (error) {
         console.error('Error loading artist content:', error);
-        showEmptyState();
+        emptyState.style.display = 'block';
+        sectionsContainer.style.display = 'none';
+        sectionsContainer.innerHTML = '';
     }
 }
 
@@ -1329,6 +1337,10 @@ function startEditing() {
 
 // Add new section
 function addNewSection() {
+    // Prevent TypeError if currentArtist is null
+    if (!currentArtist) {
+        currentArtist = { sections: [] };
+    }
     const newSection = {
         type: 'portfolio',
         title: '',
@@ -1353,13 +1365,13 @@ function addNewSection() {
     
     displayContent(currentArtist);
     document.body.classList.add('editing');
+    setupFeatureImageUpload(); // Ensure feature image upload area is shown
 
     // Scroll to the newly added section
     setTimeout(() => {
         const newSectionElement = document.querySelector(`.section[data-index="${newSectionIndex}"]`);
         if (newSectionElement) {
             newSectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
             // Flash effect to highlight the new section
             newSectionElement.style.transition = 'background-color 0.5s';
             newSectionElement.style.backgroundColor = '#f0f0f0';
@@ -1627,6 +1639,14 @@ function toggleEditMode(isEnabled) {
     cancelBtn.style.display = isEnabled ? 'block' : 'none';
     addSectionBtn.style.display = isEnabled ? 'block' : 'none';
     
+    // Prevent TypeError if currentArtist is null
+    if (!currentArtist) {
+        emptyState.style.display = 'block';
+        sectionsContainer.style.display = 'none';
+        sectionsContainer.innerHTML = '';
+        return;
+    }
+    
     // Update add/remove shop button
     const hasShop = currentArtist.sections.some(section => section.type === 'shop');
     addShopBtn.textContent = hasShop ? 'Remove Shop' : 'Add Shop';
@@ -1650,11 +1670,15 @@ function toggleEditMode(isEnabled) {
         uploadButton.style.display = isEnabled ? 'block' : 'none';
     }
 
-    // When exiting edit mode, check if we need to show empty state
-    if (!isEnabled && (!currentArtist.sections || currentArtist.sections.length === 0 || 
+    // --- FIX: Always show editing UI in edit mode, even if empty ---
+    if (isEnabled) {
+        emptyState.style.display = 'none';
+        sectionsContainer.style.display = 'block';
+        displayContent(currentArtist);
+    } else if (!currentArtist.sections || currentArtist.sections.length === 0 || 
         (currentArtist.sections.length === 1 && 
          currentArtist.sections[0].type === 'services' && 
-         (!currentArtist.sections[0].services || currentArtist.sections[0].services.length === 0)))) {
+         (!currentArtist.sections[0].services || currentArtist.sections[0].services.length === 0))) {
         emptyState.innerHTML = `
             <h2>Start Creating Your Artist Page</h2>
             <p>Add sections to showcase your work, tell your story, and share your creative journey.</p>
