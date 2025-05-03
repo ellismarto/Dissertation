@@ -1379,7 +1379,7 @@ async function saveChanges() {
     sectionElements.forEach((sectionEl, index) => {
         const titleEl = sectionEl.querySelector('.section-title');
         const descEl = sectionEl.querySelector('.section-description');
-        const type = sectionEl.querySelector('.services-list') ? 'services' : 'portfolio';
+        const type = sectionEl.dataset.type || (sectionEl.querySelector('.services-list') ? 'services' : 'portfolio');
         
         // Get the actual content and placeholders
         const titleContent = titleEl ? titleEl.textContent.trim() : '';
@@ -1403,6 +1403,28 @@ async function saveChanges() {
                 title: 'Services',
                 description: finalDesc,
                 services: serviceItems,
+                index: index
+            });
+        } else if (type === 'shop') {
+            // Handle shop section
+            const productCards = Array.from(sectionEl.querySelectorAll('.shop-card'));
+            const products = productCards
+                .filter(card => !card.classList.contains('add-product-card'))
+                .map(card => {
+                    const img = card.querySelector('.shop-image');
+                    const title = card.querySelector('.shop-product-title');
+                    const price = card.querySelector('.shop-product-price');
+                    return {
+                        image: img ? img.src : '',
+                        title: title ? title.textContent : '',
+                        price: price ? parseFloat(price.textContent.replace('£', '')) : 0
+                    };
+                });
+            sections.push({
+                type: 'shop',
+                title: finalTitle || 'Shop',
+                description: finalDesc || '',
+                products: products,
                 index: index
             });
         } else {
@@ -1557,6 +1579,28 @@ function checkForChanges(oldSections, newSections) {
                 const oldService = oldServices[serviceIndex];
                 return newService.name !== oldService.name || 
                        newService.price !== oldService.price;
+            });
+        } else if (newSection.type === 'shop') {
+            // Compare shop sections
+            const oldProducts = oldSection.products || [];
+            const newProducts = newSection.products || [];
+
+            // If both products arrays are empty, check title/description
+            if (oldProducts.length === 0 && newProducts.length === 0) {
+                return newSection.title !== oldSection.title ||
+                       newSection.description !== oldSection.description;
+            }
+
+            if (oldProducts.length !== newProducts.length) {
+                return true;
+            }
+
+            // Compare each product
+            return newProducts.some((newProduct, productIndex) => {
+                const oldProduct = oldProducts[productIndex];
+                return newProduct.title !== oldProduct.title ||
+                       newProduct.price !== oldProduct.price ||
+                       newProduct.image !== oldProduct.image;
             });
         } else {
             // Compare portfolio sections

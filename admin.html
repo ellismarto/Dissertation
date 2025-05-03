@@ -14,9 +14,31 @@
         </div>
         <div class="nav-links">
             <a href="index.html">Home</a>
+            <a href="artists.html">Artists</a>
             <a href="submission-dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-search">
+            <input type="search" 
+                   id="nav-search-input" 
+                   placeholder="Search artists..." 
+                   autocomplete="off" 
+                   autocorrect="off" 
+                   autocapitalize="off" 
+                   spellcheck="false">
+            <div class="nav-search-results" id="nav-search-results"></div>
+        </div>
+        <div class="nav-right">
             <a href="submit.html" class="nav-submit-button">Submit Work</a>
-            <a href="admin.html" class="active">Admin</a>
+            <div class="messages-bell">
+                <span class="messages-badge"></span>
+                <i class="fas fa-envelope"></i>
+                <div class="messages-dropdown"></div>
+            </div>
+            <div class="notification-bell">
+                <span class="notification-badge"></span>
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown"></div>
+            </div>
         </div>
         <button class="mobile-menu" aria-label="Menu">
             <span></span>
@@ -48,5 +70,7 @@
     </footer>
 
     <script src="js/admin.js"></script>
+    <script type="module" src="js/messages.js" defer></script>
+    <script type="module" src="js/search.js" defer></script>
 </body>
 </html> 
